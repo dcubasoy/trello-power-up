@@ -1,1 +1,1 @@
-# ccozad.github.io
+A power up for the Trello platform that shows previews from drop links.
