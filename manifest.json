@@ -1,0 +1,26 @@
+{
+  "name": "Droplr",
+  "description": "",
+  "details": "A simple Trello power up test",
+  "icon": {
+    "url": "./images/logo.png"
+  },
+  "author": "Charles Cozad",
+  "capabilities": [
+    "attachment-sections",
+    "attachment-thumbnail",
+    "callback",
+    "card-badges",
+    "card-detail-badges",
+    "format-url",
+    "show-settings"
+  ],
+  "connectors": {
+    "iframe": {
+      "url": "./index.html"
+    }
+  },
+  "recommend": {
+    "urls": []
+  }
+}
