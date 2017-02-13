@@ -6,4 +6,4 @@ Requires Docker.
 
 ``docker build . -t power-up:latest && docker run -p 80:80 power-up:latest``
 
-Power Up should be accessible at http://localhost.
+The built power up should be accessible at http://localhost.
