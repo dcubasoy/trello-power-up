@@ -22,7 +22,10 @@ t.render(function(){
 	var dropCount = urls.length;
 	var dropDiv;
 	var imageElement;
+	var titleElement;
 	var linkElement;
+	var copyLinkElement;
+	var copyLinkButtonElement;
 	var dropCode;
 	var allDropsDiv = document.getElementById('droplrdrops');
 	allDropsDiv.innerHTML = '';
@@ -30,11 +33,19 @@ t.render(function(){
 	{
 		dropCode = formatDropUrl(1, urls[i]);
 		dropDiv = document.getElementById("detail-row-template").cloneNode(true);
-		dropDiv.setAttribute("id", dropCode);
+		dropDiv.setAttribute("id", "drop" + dropCode);
 		imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
 		imageElement.setAttribute("src", 'https://d.pr/' + dropCode + '/thumbnail');
+		titleElement = dropDiv.getElementsByClassName("drop-title")[0];
+		//titleElement.innerHTML = urls[i];
+		titleElement.innerHTML = "Drop title placeholder";
 		linkElement = dropDiv.getElementsByClassName("drop-link")[0];
 		linkElement.setAttribute("href", urls[i]);
+		copyLinkElement = dropDiv.getElementsByClassName("copy-drop-link")[0];
+		copyLinkElement.setAttribute("value", urls[i]);
+		copyLinkElement.setAttribute("id", "textbox-" + dropCode);
+		copyLinkButtonElement = dropDiv.getElementsByClassName("copy-drop-link-button")[0];
+		copyLinkButtonElement.setAttribute("data-clipboard-target", "#" + "textbox-" + dropCode);
 		
 		allDropsDiv.appendChild(dropDiv);
 		dropDiv.setAttribute("style", "");

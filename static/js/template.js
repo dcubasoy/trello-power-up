@@ -65,8 +65,8 @@ TrelloPowerUp.initialize({
   'attachment-sections': function(t, options){
     var claimed = options.entries.filter(function(attachment){
 	  //Partially working, will build this out after kick off
-      //return attachment.url.indexOf('http://d.pr') == 0;
-	  return false;
+	  //return (attachment.url.indexOf('http://d.pr') == 0) || (attachment.url.indexOf('https://d.pr') == 0);
+      return test_drop_regex.test(attachment.url);
     });
 
     if(claimed && claimed.length > 0){

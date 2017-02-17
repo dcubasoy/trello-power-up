@@ -1,7 +1,46 @@
 .drop-thumbnail {
-  padding: 12px;
+  margin: 7px;
+  border: 1px solid #D6DADC;
+  border-radius: 3px;
 }
 
 .drop-link {
   text-decoration: underline;
+}
+
+.copy-drop-link {
+  padding:8px 15px; 
+  height: 34px; 
+  width: 200px;
+}
+
+.copy-drop-link-button {
+  position:absolute; 
+  padding:6px 8px; 
+  height: 32px; 
+  top: -4px; 
+  left: 200px;
+  border-radius: 0px 3px 3px 0px;
+}
+
+.make-drop-cover {
+  text-decoration: underline;
+}
+
+.drop-comment {
+  text-decoration: underline;
+}
+
+.clippy {
+	position: relative;
+	width: 24px;
+	height: 24px;
+}
+
+.quiet, .quiet a {
+    color: #8c8c8c;
+}
+
+.quiet a:hover:not(.disabled) {
+    color: #4d4d4d;
 }

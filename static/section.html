@@ -1,23 +1,83 @@
 <html>
   <head>
 	<link rel="stylesheet" href="./css/droplr.css">
-    <link rel="stylesheet" href="./css/core.min.css">
+	<link rel="stylesheet" href="./css/font-awesome.min.css">
+	<link rel="stylesheet" href="./css/bootstrap.min.css">
+	<link rel="stylesheet" href="./css/bootstrap-theme.min.css">
 	<link rel="stylesheet" href="https://trello.com/power-ups/power-up.css">
-    <script src="https://trello.com/power-ups/power-up.min.js"></script>
-  </head>
-  <body>
-    <div id="content">
-      <div style="height: 100%" id="droplrdrops"></div>
-    </div>
-	<div id="detail-row-template" style="display: none;" class = "row">
-		<div class="col xs-3 md-3 xl-3 ">
-			<img class="drop-thumbnail" src="./images/icon-gray.svg" width="96" height="96">
-		</div>
-		<div class="col xs-9 md-9 xl-9">
-			<a href="#" class="drop-link">Open Drop</a>
-		</div>
-	</div>
+	<script src="https://trello.com/power-ups/power-up.min.js"></script>
+	<script src="./js/jquery.min.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
 	<script src="./js/droplr.js"></script>
     <script src="./js/section.js"></script>
+  </head>
+  <body style="background-color: #EDEFF0">
+    <div id="content">
+      <div style="height: 100%" id="droplrdrops" class="container-fluid"></div>
+    </div>
+	<div id="detail-row-template" style="display: none;" class = "row">
+		<div class="col-xs-3 col-md-3 col-xl-3 ">
+			<img class="drop-thumbnail" src="" width="96" height="96">
+		</div>
+		<div class="col-xs-9 col-md-9 col-xl-9">
+			<div class="row">
+				<div class="col xs-12 md-12 xl-12 drop-title">Title</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-12 col-md-12 col-xl-12 quiet">Added date</div>
+			</div>
+			<div class="row"  style="padding-top:10px">
+				<div class="col-xs-12 col-md-12 col-xl-12">
+					<i class="fa fa-external-link quiet" aria-hidden="true"></i> 
+					<a href="#" class="drop-link quiet" target="_blank">Open Drop </a>
+					<i class="fa fa-window-maximize quiet" aria-hidden="true" style="margin-left: 10px;"></i>
+					<a href="#" class="make-drop-cover quiet">Make Cover </a>
+					<i class="fa fa-comment-o quiet" aria-hidden="true" style="margin-left: 10px;"></i>
+					<a href="#" class="drop-comment quiet">Comment</a>
+				</div>
+			</div>
+			<div class="row" style="margin-top: 10px">
+				<div class="col-xs-12 col-md-12 col-xl-12">
+					<form class="form-inline">
+						<input class="form-control copy-drop-link" style="width: 200px;" type="text" value="">
+						<button class="copy-drop-link-button" type="button" data-clipboard-target="#foo" data-clipboard-action="copy" data-original-title="Copy link">
+							<i class="fa fa-clipboard quiet"></i>
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="./js/clipboard.min.js"></script>
+	<script>
+$('.copy-drop-link-button').tooltip({
+  trigger: 'click',
+  placement: 'bottom'
+});
+
+function setTooltip(btn, message) {
+  $(btn).tooltip('hide')
+    .attr('data-original-title', message)
+    .tooltip('show');
+}
+
+function hideTooltip(btn) {
+  setTimeout(function() {
+    $(btn).tooltip('hide');
+  }, 1000);
+}
+
+var clipboard = new Clipboard('.copy-drop-link-button');
+
+clipboard.on('success', function(e) {
+  setTooltip(e.trigger, 'Copied!');
+  hideTooltip(e.trigger);
+});
+    
+clipboard.on('error', function(e) {
+  setTooltip(e.trigger, 'Failed!');
+  hideTooltip(e.trigger);
+});
+    </script>
   </body>
 </html>
