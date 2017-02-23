@@ -1,7 +1,7 @@
 {
   "name": "Droplr",
   "description": "",
-  "details": "A simple Trello power up test",
+  "details": "Rich content for Droplr drops",
   "icon": {
     "url": "./images/logo.png"
   },
@@ -10,10 +10,11 @@
     "attachment-sections",
     "attachment-thumbnail",
     "callback",
-    "card-badges",
-    "card-detail-badges",
     "format-url",
-    "show-settings"
+    "show-settings",
+    "authorization-status",
+	"show-authorization"
+    
   ],
   "connectors": {
     "iframe": {
@@ -21,6 +22,9 @@
     }
   },
   "recommend": {
-    "urls": []
+    "urls": [
+	"https://api.trello.com/*",
+	"https://code.jquery.com/jquery-1.7.1.min.js"
+	]
   }
 }

@@ -2,71 +2,19 @@
 var DROPLR_ICON = './images/logo.png';
 var DROPL_GRAY_ICON = './images/logo-gray.png';
 var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivf]\/\w{3,8}/
+var test_drop_cover_image_regex = /^Cover image for drop /
 // [1] = Protocol
 // [2] = Drop Type
 // [3] = Drop Code
 // [4] = Drop Access Code
 var capture_drop_regex = /^(http|https):\/\/d\.pr\/([ivf])\/(\w{3,8})\/?(\w*)\/?/
 
-var getBadges = function(t){
-  return t.card('name')
-  .get('name')
-  .then(function(cardName){
-    if(cardName.indexOf('http://d.pr/i') > -1) {
-		return [{
-			title: 'Detail Badge', // for detail badges only
-			text: '2543',
-			icon: DROPL_GRAY_ICON, // for card front badges only
-			color: ''
-		}];
-    } else {
-      return [];
-	}
-  })
-};
-
-var formatDropUrl = function(t, url){
-  if(!test_drop_regex.test(url)){
-    return null;
-  }
-  capture_results = capture_drop_regex.exec(url);
-  if(capture_results != null) {
-	  var dropParameters = {
-		protocol: capture_results[1],
-		type: capture_results[2],
-		code: capture_results[3],
-		accessCode: capture_results[4],
-		thumbnail: ''
-	};
-  
-	if(dropParameters.accessCode == 'small' || 
-		dropParameters.accessCode == 'medium' || 
-		dropParameters.accessCode == 'thumbnail')
-	{
-		dropParameters.accessCode = '';
-	}
-  
-	if(dropParameters.accessCode.length > 0) {
-	  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/thumbnail';
-	} else {
-	  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/thumbnail';
-	}
-  
-	return dropParameters;
-  } else {
-	  console.log("This url passed the test but failed to capture: " + url);
-	  return null;
-  }
-  
-};
-
 
 TrelloPowerUp.initialize({
   'attachment-sections': function(t, options){
     var claimed = options.entries.filter(function(attachment){
-	  //Partially working, will build this out after kick off
-	  //return (attachment.url.indexOf('http://d.pr') == 0) || (attachment.url.indexOf('https://d.pr') == 0);
-      return test_drop_regex.test(attachment.url);
+	  var claimed = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name);
+      return claimed;
     });
 
     if(claimed && claimed.length > 0){
@@ -103,12 +51,6 @@ TrelloPowerUp.initialize({
       throw t.NotHandled();
     }
   },
-  'card-badges': function(t, options){
-    return getBadges(t);
-  },
-  'card-detail-badges': function(t, options) {
-    return getBadges(t);
-  },
   'format-url': function(t, options) {
     var dropInfo = formatDropUrl(t, options.url);
     if(dropInfo){
@@ -126,5 +68,18 @@ TrelloPowerUp.initialize({
       url: './settings.html',
       height: 184
     });
+  },
+  'authorization-status': (function (t) {
+     return new TrelloPowerUp.Promise(function (resolve) {
+       console.log('authorization-status')
+       return resolve({ authorized: false });
+    });
+  }),
+  'show-authorization': function(t) {
+    return t.popup({
+      title: 'Additional Droplr Features',
+      url: 'authorize.html',
+      height: 140,
+    })
   }
 });

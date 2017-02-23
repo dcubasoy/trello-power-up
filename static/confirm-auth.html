@@ -1,0 +1,16 @@
+<html>
+	<head>
+		<script>
+var token = window.location.hash.substring(7);
+if (window.opener && typeof window.opener.authorize === 'function') {
+	window.opener.authorize(token);
+} else {
+	localStorage.setItem('token', token);
+}
+
+setTimeout(function(){ window.close(); }, 1000);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

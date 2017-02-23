@@ -1,8 +1,63 @@
+var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivf]\/\w{3,8}/
+var test_drop_cover_image_regex = /^Cover image for drop /
+// [1] = Protocol
+// [2] = Drop Type
+// [3] = Drop Code
+// [4] = Drop Access Code
+var capture_drop_regex = /^(http|https):\/\/d\.pr\/([ivf])\/(\w{3,8})\/?(\w*)\/?/
+var capture_drop_cover_image_regex = /^Cover image for drop (\w*)/
+
 var formatDropUrl = function(t, url){
-  //http://d.pr/i/8yyV
-  if(!/^http?:\/\/d\.pr\/i\/\w{3,7}/.test(url)){
+  if(!test_drop_regex.test(url)){
     return null;
   }
-  var dropCode = /^http?:\/\/d\.pr\/i\/(\w{3,7})/.exec(url)[1];
-  return dropCode;
+  capture_results = capture_drop_regex.exec(url);
+  if(capture_results != null) {
+	  var dropParameters = {
+		protocol: capture_results[1],
+		type: capture_results[2],
+		code: capture_results[3],
+		accessCode: capture_results[4],
+		thumbnail: '',
+		fullsize: ''
+	};
+  
+	if(dropParameters.accessCode == 'small' || 
+		dropParameters.accessCode == 'medium' || 
+		dropParameters.accessCode == 'thumbnail')
+	{
+		dropParameters.accessCode = '';
+	}
+  
+	if(dropParameters.accessCode.length > 0) {
+	  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/thumbnail';
+	} else {
+	  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/thumbnail';
+	}
+	
+	if(dropParameters.accessCode.length > 0) {
+	  dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '+';
+	} else {
+	  dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '+';
+	}
+  
+	return dropParameters;
+  } else {
+	  console.log("This url passed the test but failed to capture: " + url);
+	  return null;
+  }
+  
 };
+
+var extractDropCodeFromCover = function(t, attachmentName) {
+	if(!test_drop_cover_image_regex.test(attachmentName)) {
+		return null
+	}
+	
+	capture_results = capture_drop_cover_image_regex.exec(attachmentName);
+	if(capture_results != null) {
+		return capture_results[1];
+	} else {
+		return null;
+	}
+}

@@ -6,14 +6,35 @@
 	<link rel="stylesheet" href="./css/bootstrap-theme.min.css">
 	<link rel="stylesheet" href="https://trello.com/power-ups/power-up.css">
 	<script src="https://trello.com/power-ups/power-up.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script src="https://api.trello.com/1/client.js?key=d4555b9abf43f890715d5a12c07dea09"></script>
+	<script>
+//var authenticationSuccess = function (res) { console.log('Successful authentication from section'); };
+//var authenticationFailure = function () { console.log('Failed authentication'); };
+
+//Trello.authorize({
+//	type: 'popup',
+//	name: 'Droplr',
+//	scope: {
+//		read: true,
+//		write: true
+//	},
+//	interactive: false,
+//	expiration: 'never',
+//	success: authenticationSuccess,
+//	error: authenticationFailure
+//});
+	</script>
 	<script src="./js/jquery.min.js"></script>
 	<script src="./js/bootstrap.min.js"></script>
 	<script src="./js/droplr.js"></script>
-    <script src="./js/section.js"></script>
+    <!--<script src="./js/section.js"></script>-->
   </head>
   <body style="background-color: #EDEFF0">
     <div id="content">
-      <div style="height: 100%" id="droplrdrops" class="container-fluid"></div>
+      <div style="height: 100%" id="droplrdrops" class="container-fluid">
+		<p>Doing magic...</p>
+	  </div>
     </div>
 	<div id="detail-row-template" style="display: none;" class = "row">
 		<div class="col-xs-3 col-md-3 col-xl-3 ">
@@ -24,16 +45,16 @@
 				<div class="col xs-12 md-12 xl-12 drop-title">Title</div>
 			</div>
 			<div class="row">
-				<div class="col-xs-12 col-md-12 col-xl-12 quiet">Added date</div>
+				<div class="col-xs-12 col-md-12 col-xl-12 quiet added-date">Added date</div>
 			</div>
 			<div class="row"  style="padding-top:10px">
 				<div class="col-xs-12 col-md-12 col-xl-12">
 					<i class="fa fa-external-link quiet" aria-hidden="true"></i> 
 					<a href="#" class="drop-link quiet" target="_blank">Open Drop </a>
-					<i class="fa fa-window-maximize quiet" aria-hidden="true" style="margin-left: 10px;"></i>
-					<a href="#" class="make-drop-cover quiet">Make Cover </a>
-					<i class="fa fa-comment-o quiet" aria-hidden="true" style="margin-left: 10px;"></i>
-					<a href="#" class="drop-comment quiet">Comment</a>
+					<i class="fa fa-window-maximize quiet" aria-hidden="true" style="margin-left: 10px;display: none;"></i>
+					<a href="#" class="drop-cover quiet" style="display: none;">Make Cover </a>
+					<!--<i class="fa fa-comment-o quiet" aria-hidden="true" style="margin-left: 10px;"></i>
+					<a href="#" class="drop-comment quiet">Comment</a>-->
 				</div>
 			</div>
 			<div class="row" style="margin-top: 10px">
@@ -48,6 +69,7 @@
 			</div>
 		</div>
 	</div>
+	<script src="./js/section.js"></script>
 	<script src="./js/clipboard.min.js"></script>
 	<script>
 $('.copy-drop-link-button').tooltip({
@@ -79,5 +101,6 @@ clipboard.on('error', function(e) {
   hideTooltip(e.trigger);
 });
     </script>
+	
   </body>
 </html>
