@@ -10,6 +10,7 @@
     "attachment-sections",
     "attachment-thumbnail",
     "callback",
+	"card-buttons",
     "format-url",
     "show-settings",
     "authorization-status",

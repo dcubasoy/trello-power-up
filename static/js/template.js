@@ -1,6 +1,6 @@
 /* global TrelloPowerUp */
 var DROPLR_ICON = './images/logo.png';
-var DROPL_GRAY_ICON = './images/logo-gray.png';
+var DROPLR_GRAY_ICON = './images/logo-gray.png';
 var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivf]\/\w{3,8}/
 var test_drop_cover_image_regex = /^Cover image for drop /
 // [1] = Protocol
@@ -9,6 +9,13 @@ var test_drop_cover_image_regex = /^Cover image for drop /
 // [4] = Drop Access Code
 var capture_drop_regex = /^(http|https):\/\/d\.pr\/([ivf])\/(\w{3,8})\/?(\w*)\/?/
 
+var cardButtonCallback = function(t){
+  return t.popup({
+    title: 'Droplr',
+	url: './card-button.html',
+    height: 135
+  });
+};
 
 TrelloPowerUp.initialize({
   'attachment-sections': function(t, options){
@@ -51,6 +58,13 @@ TrelloPowerUp.initialize({
       throw t.NotHandled();
     }
   },
+  'card-buttons': function(t, options) {
+    return [{
+      icon: DROPLR_GRAY_ICON,
+      text: 'Droplr',
+      callback: cardButtonCallback
+    }];
+  },
   'format-url': function(t, options) {
     var dropInfo = formatDropUrl(t, options.url);
     if(dropInfo){
@@ -71,7 +85,6 @@ TrelloPowerUp.initialize({
   },
   'authorization-status': (function (t) {
      return new TrelloPowerUp.Promise(function (resolve) {
-       console.log('authorization-status')
        return resolve({ authorized: false });
     });
   }),
