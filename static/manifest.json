@@ -11,6 +11,7 @@
     "attachment-thumbnail",
     "callback",
 	"card-buttons",
+	"card-from-url",
     "format-url",
     "show-settings",
     "authorization-status",

@@ -1,11 +1,13 @@
 var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivf]\/\w{3,8}/
 var test_drop_cover_image_regex = /^Cover image for drop /
+var test_drop_cover_image_regex2 = /^\w{3,8}\.png$/
 // [1] = Protocol
 // [2] = Drop Type
 // [3] = Drop Code
 // [4] = Drop Access Code
 var capture_drop_regex = /^(http|https):\/\/d\.pr\/([ivf])\/(\w{3,8})\/?(\w*)\/?/
 var capture_drop_cover_image_regex = /^Cover image for drop (\w*)/
+var capture_drop_cover_image_regex2 = /^(\w{3,8})\.png$/
 
 var formatDropUrl = function(t, url){
   if(!test_drop_regex.test(url)){
@@ -51,13 +53,23 @@ var formatDropUrl = function(t, url){
 
 var extractDropCodeFromCover = function(t, attachmentName) {
 	if(!test_drop_cover_image_regex.test(attachmentName)) {
-		return null
-	}
-	
-	capture_results = capture_drop_cover_image_regex.exec(attachmentName);
-	if(capture_results != null) {
-		return capture_results[1];
+		if(!test_drop_cover_image_regex2.test(attachmentName)) {
+			return null
+		} else {
+			capture_results = capture_drop_cover_image_regex2.exec(attachmentName);
+			if(capture_results != null) {
+				return capture_results[1];
+			} else {
+				return null;
+			}
+		}
+		
 	} else {
-		return null;
+		capture_results = capture_drop_cover_image_regex.exec(attachmentName);
+		if(capture_results != null) {
+			return capture_results[1];
+		} else {
+			return null;
+		}
 	}
 }

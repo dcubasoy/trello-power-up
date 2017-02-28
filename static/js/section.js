@@ -10,7 +10,7 @@ var Promise = TrelloPowerUp.Promise;
 var urls = [];
 var dates = [];
 var dropCount = 0;
-var dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
+var i, dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
 var coverLinkElement, copyLinkButtonElement, dropCode, allDropsDiv, dropInfo;
 var dropInfoLookup = new Map();
 var dropCoverLookup = new Map();
@@ -20,10 +20,25 @@ var isDropLink = function(attachment) {
 }
 
 var isDropCoverImage = function(attachment) {
-	return test_drop_cover_image_regex.test(attachment.name);
+	return test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
 }
 
+// Sets the card cover to an image associated with a drop
+// card - ID for a Trello card entity
+// drop - Short code for a drop link
 var setCardCover = function (card, drop) {
+	// Card covers show an image on the "front" of a Trello card. Card covers
+	// can only be set through the Trello API. At the time of this writing 
+	// (Feb 2017) Trello only allows image attachments to be used as covers. 
+	// This is because the preview fields in the card record are only 
+	// populated during the image upload process.
+	
+	// We need to account for two scenarios when setting the cover image.
+	// 1. A drop already has a cover in the attachments. In this case we just
+	//    set the cover to the correct attachment ID.
+	// 2. A drop does not have a cover in the attachments yet. In this case
+	//    we create the image attachment on behalf of the user and set the
+	//    cover to the newly created attachment.
 	dropInfo = dropInfoLookup.get(drop);
 	if(dropCoverLookup.has(dropInfo.code)) {
 		var attachment = dropCoverLookup.get(dropInfo.code).id;
@@ -51,7 +66,11 @@ var setCardCover = function (card, drop) {
 	}
 }
 
+// Clears a cover image associated with a card
+// card - ID for a Trello card entity
 var clearCardCover = function (card) {
+	// The card cover can only be set through the Trello API
+	// Setting the idAttachmentCover for a card to an empty string clears the cover
 	return new Promise.all([
 		Trello.put('/cards/' + card + '/idAttachmentCover', {value: ""} )
 	])
@@ -61,11 +80,25 @@ var clearCardCover = function (card) {
 	});
 }
 
+// Attatch click event handlers to update the cover image
+// We take advantage of data-* attributes for this purpose
 var makeCardCoverEventListener = function (domElement) {
 	domElement.addEventListener('click', function() {
 		var card = this.getAttribute("data-droplr-card");
 		var drop = this.getAttribute("data-droplr-drop");
 		setCardCover(card, drop)
+		.then(function() {
+			refreshDroplrSection();
+		});
+	});
+}
+
+// Attatch click event handlers to remove the cover image
+// We take advantage of data-* attributes for this purpose
+var removeCardCoverEventListener = function (domElement) {
+	domElement.addEventListener('click', function() {
+		var card = this.getAttribute("data-droplr-card");
+		clearCardCover(card)
 		.then(function() {
 			refreshDroplrSection();
 		});
@@ -87,10 +120,11 @@ var formatDate = function(date) {
 	return month + " " + day + " at " + hours + ":" + minutes + " " + ampm;
 }
 
+// This method gets called each time a user adds or removes attachments to our 
+// attachment section. This method is responsible for keeping drop info caches
+// and cover image caches up to date. It is also responsible for displaying
+// generating HTML to display the appropriate state of all drops.
 var refreshDroplrSection = function(){
-  // make sure your rendering logic lives here, since we will
-  // recall this method as the user adds and removes attachments
-  // from your section
   t.get('organization', 'private', 'token')
   .then(function(token) {
 	Trello.setToken(token);
@@ -110,16 +144,23 @@ var refreshDroplrSection = function(){
 	  ]);
   })
   .then(function(res) {
+	// res[0] = All attachments that are drop links
+	// res[1] - All attachments that are drop cover images
+	// res[2] - DB record for this card
+	
 	urls = res[0].map(function(a){ return a.url; });
 	dates = res[0].map(function(a){ return new Date(a.date); });
+	
+	// Map each the drop code of each cover image to the respective attachment record
+	// We'll use this info later make decisions about cover image status
+	dropCoverLookup.clear();
 	for(i = 0; i < res[1].length; i++) {
 		dropCode = extractDropCodeFromCover(null, res[1][i].name);
 		if(dropCode != null) {
-			if(!dropCoverLookup.has(dropCode)) {
-				dropCoverLookup.set(dropCode, res[1][i]);
-			}
+			dropCoverLookup.set(dropCode, res[1][i]);
 		}
 	}
+	
 	dropCount = urls.length;
 	allDropsDiv = document.getElementById('droplrdrops');
 	allDropsDiv.innerHTML = '';
@@ -148,20 +189,18 @@ var refreshDroplrSection = function(){
 				coverLinkElement.setAttribute("style", "");
 				dropDiv.getElementsByClassName("fa-window-maximize")[0].setAttribute("style", "margin-left: 10px;");
 				if(res[2].cover == null) {
+					// The card does not currently have a cover
 					makeCardCoverEventListener(coverLinkElement);
 				} else if(!dropCoverLookup.has(dropCode)) {
+					// There is no cover associated with this drop so it can't be the cover
 					makeCardCoverEventListener(coverLinkElement);
 				} else if(res[2].cover.id != dropCoverLookup.get(dropCode).id) {
+					// The card has a cover and the drop has a cover but they don't match
 					makeCardCoverEventListener(coverLinkElement);
 				} else {
+					// The card's cover is this drop's cover
 					coverLinkElement.innerHTML = 'Remove Cover';
-					coverLinkElement.addEventListener('click', function() {
-						var card = this.getAttribute("data-droplr-card");
-						clearCardCover(card)
-						.then(function() {
-							refreshDroplrSection();
-						});
-					});
+					removeCardCoverEventListener(coverLinkElement);
 				}
 			} else {
 				// Drops that aren't images don't have a cover option

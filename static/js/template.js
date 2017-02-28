@@ -20,7 +20,7 @@ var cardButtonCallback = function(t){
 TrelloPowerUp.initialize({
   'attachment-sections': function(t, options){
     var claimed = options.entries.filter(function(attachment){
-	  var claimed = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name);
+	  var claimed = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
       return claimed;
     });
 
@@ -65,10 +65,21 @@ TrelloPowerUp.initialize({
       callback: cardButtonCallback
     }];
   },
-  'format-url': function(t, options) {
+  'card-from-url': function(t, options) {
     var dropInfo = formatDropUrl(t, options.url);
     if(dropInfo){
       return {
+        name: options.url,
+        desc: '![' + options.url + '](' + dropInfo.fullsize + ')'
+      };
+    } else {
+      throw t.NotHandled();
+    }
+  },
+  'format-url': function(t, options) {
+    var dropInfo = formatDropUrl(t, options.url);
+    if(dropInfo){
+	  return {
         icon: DROPLR_ICON,
         text: options.url
       };

@@ -1,5 +1,7 @@
 var Promise = TrelloPowerUp.Promise;
 var t = TrelloPowerUp.iframe();
+var trelloApiKey = "d4555b9abf43f890715d5a12c07dea09";
+var authReturnUrl = "https://ccozad.github.io/powerup-test/confirm-auth.html"
 
 t.render(function () {
     return t.sizeTo('#content')
@@ -9,9 +11,9 @@ t.render(function () {
 var Promise = TrelloPowerUp.Promise;
 var t = TrelloPowerUp.iframe();
 
-var oauthUrl = 'https://trello.com/1/authorize?expiration=never' +
-  '&name=Droplr&scope=read,write&key=d4555b9abf43f890715d5a12c07dea09&callback_method=popup' +
-  '&return_url=https://ccozad.github.io/powerup-test/confirm-auth.html';
+var oauthUrl = "https://trello.com/1/authorize?expiration=never" +
+  "&name=Droplr&scope=read,write&key=" + trelloApiKey + "&callback_method=popup" +
+  "&return_url=" + authReturnUrl;
 
 var tokenLooksValid = function(token) {
   return /^[0-9a-f]{64}$/.test(token);
