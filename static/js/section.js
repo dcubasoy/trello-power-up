@@ -9,11 +9,21 @@ var arg = t.arg('arg');
 var Promise = TrelloPowerUp.Promise;
 var urls = [];
 var dates = [];
+var titles = [];
 var dropCount = 0;
 var i, dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
 var coverLinkElement, copyLinkButtonElement, dropCode, allDropsDiv, dropInfo;
 var dropInfoLookup = new Map();
 var dropCoverLookup = new Map();
+
+var errorAlertElement = document.getElementById('errorAlert');
+var errorCloseElement = document.getElementById('errorClose');
+errorCloseElement.addEventListener('click', 
+	function () {
+		errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable collapse");
+		t.sizeTo('#content');
+	}
+);
 
 var isDropLink = function(attachment) {
 	return test_drop_regex.test(attachment.url);
@@ -80,10 +90,20 @@ var clearCardCover = function (card) {
 	});
 }
 
+var authorizeCardCoverEventListener = function (domElement) {
+	domElement.addEventListener('click', function() {
+		errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+		t.sizeTo('#content');
+	});
+	
+}
+
 // Attatch click event handlers to update the cover image
 // We take advantage of data-* attributes for this purpose
 var makeCardCoverEventListener = function (domElement) {
 	domElement.addEventListener('click', function() {
+		var btn = $(this);
+		btn.button('loading');
 		var card = this.getAttribute("data-droplr-card");
 		var drop = this.getAttribute("data-droplr-drop");
 		setCardCover(card, drop)
@@ -120,22 +140,18 @@ var formatDate = function(date) {
 	return month + " " + day + " at " + hours + ":" + minutes + " " + ampm;
 }
 
-// This method gets called each time a user adds or removes attachments to our 
-// attachment section. This method is responsible for keeping drop info caches
+// This method is responsible for keeping drop info caches
 // and cover image caches up to date. It is also responsible for displaying
 // generating HTML to display the appropriate state of all drops.
-var refreshDroplrSection = function(){
-  t.get('organization', 'private', 'token')
-  .then(function(token) {
+var renderUsingTrelloAPI = function(token) {
 	Trello.setToken(token);
 	return t.card('id', 'cover') 
-  })
-  .then(function(card) {
-     return Promise.all([
-        Trello.get('/cards/' + card.id + '/attachments', {fields: "date,name,previews,url"}),
-		card
-	 ]);
-  })
+	.then(function(card) {
+		return Promise.all([
+			Trello.get('/cards/' + card.id + '/attachments', {fields: "date,name,previews,url"}),
+			card
+		]);
+	})
   .then(function(res) {
 	  return Promise.all([
 		res[0].filter(isDropLink),
@@ -150,6 +166,7 @@ var refreshDroplrSection = function(){
 	
 	urls = res[0].map(function(a){ return a.url; });
 	dates = res[0].map(function(a){ return new Date(a.date); });
+	titles = res[0].map(function(a){ return a.name; });
 	
 	// Map each the drop code of each cover image to the respective attachment record
 	// We'll use this info later make decisions about cover image status
@@ -177,7 +194,7 @@ var refreshDroplrSection = function(){
 			imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
 			imageElement.setAttribute("src", dropInfo.thumbnail);
 			titleElement = dropDiv.getElementsByClassName("drop-title")[0];
-			titleElement.innerHTML = "Drop title placeholder";
+			titleElement.innerHTML = titles[i];
 			dateElement = dropDiv.getElementsByClassName("added-date")[0];
 			dateElement.innerHTML = "Added " + formatDate(dates[i]);
 			linkElement = dropDiv.getElementsByClassName("drop-link")[0];
@@ -215,14 +232,96 @@ var refreshDroplrSection = function(){
 			allDropsDiv.appendChild(dropDiv);
 			dropDiv.setAttribute("style", "");
 		}
-	}  
+	}
+	t.sizeTo('#content');	
   })
-  .then(function(){
-    return t.sizeTo('#content');
-  })
-  .catch(function(reason) {
-	  console.log(reason);
-  });
+};
+
+var renderUsingPowerUpApi = function() {
+	return t.card('attachments')
+	.then(function(card) {
+	  return Promise.all([
+		card.attachments.filter(isDropLink),
+		card.attachments.filter(isDropCoverImage),
+		card
+	  ]);
+	})
+	.then(function(res){
+		var urls = res[0].map(function(a){ return a.url; });
+		var dropCount = urls.length;
+		var dropDiv;
+		var imageElement;
+		var titleElement;
+		var linkElement;
+		var copyLinkElement;
+		var copyLinkButtonElement;
+		var dropCode;
+		var allDropsDiv = document.getElementById('droplrdrops');
+		allDropsDiv.innerHTML = '';
+		for(i = 0; i < dropCount; i++ ) 
+		{
+			if(!dropInfoLookup.has(urls[i])) {
+				dropInfoLookup.set(urls[i], formatDropUrl(1, urls[i]));
+			}
+			dropInfo = dropInfoLookup.get(urls[i]);
+			if(dropInfo != null) {
+				dropCode = dropInfo.code
+				dropInfo = formatDropUrl(1, urls[i]);
+				dropDiv = document.getElementById("detail-row-template").cloneNode(true);
+				dropDiv.setAttribute("id", dropCode);
+				imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
+				imageElement.setAttribute("src", dropInfo.thumbnail);
+				titleElement = dropDiv.getElementsByClassName("drop-title")[0];
+				titleElement.innerHTML = urls[i];
+				linkElement = dropDiv.getElementsByClassName("drop-link")[0];
+				linkElement.setAttribute("href", urls[i]);
+				coverLinkElement = dropDiv.getElementsByClassName("drop-cover")[0];
+				if(dropInfo.type == 'i') {
+					coverLinkElement.setAttribute("style", "");
+					dropDiv.getElementsByClassName("fa-window-maximize")[0].setAttribute("style", "margin-left: 10px;");
+					authorizeCardCoverEventListener(coverLinkElement);
+				} else {
+					// Drops that aren't images don't have a cover option
+				}
+				copyLinkElement = dropDiv.getElementsByClassName("copy-drop-link")[0];
+				copyLinkElement.setAttribute("value", urls[i]);
+				copyLinkElement.setAttribute("id", "textbox-" + dropCode);
+				copyLinkButtonElement = dropDiv.getElementsByClassName("copy-drop-link-button")[0];
+				copyLinkButtonElement.setAttribute("data-clipboard-target", "#" + "textbox-" + dropCode);
+			
+				allDropsDiv.appendChild(dropDiv);
+				dropDiv.setAttribute("style", "");
+			}
+		}
+		t.sizeTo('#content');
+	})
+};
+
+// This method gets called each time a user adds or removes attachments to our 
+// attachment section. 
+var refreshDroplrSection = function(){
+	return Promise.all([
+			t.get('organization', 'private', 'token'),
+			t.get('board', 'private', 'token')
+	])
+	.spread(function(orgToken, boardToken){
+		if(orgToken) {
+			console.log("Render using Trello API");
+			return renderUsingTrelloAPI(orgToken);
+		} else if(boardToken) {
+			console.log("Render using Trello API");
+			return renderUsingTrelloAPI(boardToken);
+		} else {
+			console.log("Render using Power-up API");
+			return renderUsingPowerUpApi();
+		}
+	})
+	.then(function(){
+		return t.sizeTo('#content');
+	})
+	.catch(function(reason) {
+		console.log(reason);
+	});
 }
 
 t.render(refreshDroplrSection);

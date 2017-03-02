@@ -89,19 +89,40 @@ TrelloPowerUp.initialize({
   },
   'show-settings': function(t, options){
     return t.popup({
-      title: 'Settings',
+      title: 'Droplr Settings',
       url: './settings.html',
       height: 184
     });
   },
   'authorization-status': (function (t) {
-     return new TrelloPowerUp.Promise(function (resolve) {
-       return resolve({ authorized: false });
+	 return new TrelloPowerUp.Promise(function (resolve) {
+		return t.get('organization', 'private', 'token', null)
+		.then(function(orgToken) {
+			if(orgToken === null) {
+				return t.get('board', 'private', 'token', null)
+				.then(function(boardToken) {
+					
+					if(boardToken === null) {
+						return resolve({ authorized: false });
+					} else {
+						return resolve({ authorized: true });
+					}
+				})
+				.catch(function() {
+					return resolve({ authorized: false });
+				})
+			} else {
+				return resolve({ authorized: true });
+			}
+		})
+		.catch(t.NotHandled, function() {
+			return resolve({ authorized: false });
+		})
     });
   }),
   'show-authorization': function(t) {
     return t.popup({
-      title: 'Additional Droplr Features',
+      title: 'Get More Droplr Features',
       url: 'authorize.html',
       height: 140,
     })

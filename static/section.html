@@ -14,6 +14,10 @@
   </head>
   <body style="background-color: #EDEFF0">
     <div id="content">
+		<div id="errorAlert" class="alert alert-danger alert-dismissable collapse">
+			<a href="#" id="errorClose" class="close" aria-label="close">×</a>
+			<strong>Error! </strong><span id="errorMessage">Link your Trello account to Droplr to use drops as card covers.</span>
+		</div>
       <div style="height: 100%" id="droplrdrops" class="container-fluid">
 		<p>Doing magic...</p>
 	  </div>
@@ -34,7 +38,7 @@
 					<i class="fa fa-external-link quiet" aria-hidden="true"></i> 
 					<a href="#" class="drop-link quiet" target="_blank">Open Drop </a>
 					<i class="fa fa-window-maximize quiet" aria-hidden="true" style="margin-left: 10px;display: none;"></i>
-					<a href="#" class="drop-cover quiet" style="display: none;">Make Cover </a>
+					<a href="#" class="drop-cover quiet" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Updating Cover..." style="display: none;">Make Cover </a>
 					<!--<i class="fa fa-comment-o quiet" aria-hidden="true" style="margin-left: 10px;"></i>
 					<a href="#" class="drop-comment quiet">Comment</a>-->
 				</div>

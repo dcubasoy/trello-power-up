@@ -1,20 +1,29 @@
 <html>
   <head>
+  	<link rel="stylesheet" href="./css/font-awesome.min.css">
+	<link rel="stylesheet" href="./css/bootstrap.min.css">
+	<link rel="stylesheet" href="./css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="https://trello.com/power-ups/power-up.css">
     <script src="https://trello.com/power-ups/power-up.min.js"></script>
-	<script src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-	<script src="https://api.trello.com/1/client.js?key=d4555b9abf43f890715d5a12c07dea09"></script>
-	<script src="./js/droplr.js"></script>
   </head>
   <body>
     <div id="content">
+	  <div id="errorAlert" class="alert alert-danger alert-dismissable collapse">
+		<a href="#" id="errorClose" class="close" aria-label="close">×</a>
+		<strong>Error! </strong><span id="errorMessage">This alert box could indicate a successful or positive action.</span>
+	  </div>
 	  <label for="drop-link">Drop Link</label>
       <input id="drop-link" class="form-control" style="width: 200px;" type="text" value="">
 	  <div id="actions" style="display:inline-block;">
-		<button id="make-cover" class="mod-primary" style="margin: 0px; padding: 8px;">Make Cover</button>
-		<button id="attach" style="padding: 8px;">Attach Drop</button>
+		<button id="make-cover" class="mod-primary" data-loading-text="<i class='mod-primary fa fa-circle-o-notch fa-spin'></i>Updating Cover..." style="margin: 0px; padding: 8px;">Make Cover</button>
+		<button id="attach" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Attaching..." style="padding: 8px;">Attach Drop</button>
 	  </div>
     </div>
+	<script src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script src="https://api.trello.com/1/client.js?key=d4555b9abf43f890715d5a12c07dea09"></script>
+	<script src="./js/jquery.min.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
+	<script src="./js/droplr.js"></script>
 	<script src="./js/card-button.js"></script>
   </body>
 </html>
