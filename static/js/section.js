@@ -12,9 +12,12 @@ var dates = [];
 var titles = [];
 var dropCount = 0;
 var i, dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
-var coverLinkElement, copyLinkButtonElement, dropCode, allDropsDiv, dropInfo;
+var coverLinkElement, copyLinkButtonElement, dropCode, dropInfo;
 var dropInfoLookup = new Map();
 var dropCoverLookup = new Map();
+
+var allDropsDiv = document.getElementById('droplrdrops');
+var detailRowTemplate = document.getElementById("detail-row-template")
 
 var errorAlertElement = document.getElementById('errorAlert');
 var errorCloseElement = document.getElementById('errorClose');
@@ -179,7 +182,6 @@ var renderUsingTrelloAPI = function(token) {
 	}
 	
 	dropCount = urls.length;
-	allDropsDiv = document.getElementById('droplrdrops');
 	allDropsDiv.innerHTML = '';
 	for(i = 0; i < dropCount; i++ ) 
 	{
@@ -189,7 +191,7 @@ var renderUsingTrelloAPI = function(token) {
 		dropInfo = dropInfoLookup.get(urls[i]);
 		if(dropInfo != null) {
 			dropCode = dropInfo.code
-			dropDiv = document.getElementById("detail-row-template").cloneNode(true);
+			dropDiv = detailRowTemplate.cloneNode(true);
 			dropDiv.setAttribute("id", "drop" + dropCode);
 			imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
 			imageElement.setAttribute("src", dropInfo.thumbnail);
@@ -247,16 +249,9 @@ var renderUsingPowerUpApi = function() {
 	  ]);
 	})
 	.then(function(res){
-		var urls = res[0].map(function(a){ return a.url; });
-		var dropCount = urls.length;
-		var dropDiv;
-		var imageElement;
-		var titleElement;
-		var linkElement;
-		var copyLinkElement;
-		var copyLinkButtonElement;
-		var dropCode;
-		var allDropsDiv = document.getElementById('droplrdrops');
+		urls = res[0].map(function(a){ return a.url; });
+		
+		dropCount = urls.length;
 		allDropsDiv.innerHTML = '';
 		for(i = 0; i < dropCount; i++ ) 
 		{
@@ -267,12 +262,14 @@ var renderUsingPowerUpApi = function() {
 			if(dropInfo != null) {
 				dropCode = dropInfo.code
 				dropInfo = formatDropUrl(1, urls[i]);
-				dropDiv = document.getElementById("detail-row-template").cloneNode(true);
+				dropDiv = detailRowTemplate.cloneNode(true);
 				dropDiv.setAttribute("id", dropCode);
 				imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
 				imageElement.setAttribute("src", dropInfo.thumbnail);
 				titleElement = dropDiv.getElementsByClassName("drop-title")[0];
 				titleElement.innerHTML = urls[i];
+				dateElement = dropDiv.getElementsByClassName("added-date")[0];
+				dateElement.setAttribute("style", "display: none;");
 				linkElement = dropDiv.getElementsByClassName("drop-link")[0];
 				linkElement.setAttribute("href", urls[i]);
 				coverLinkElement = dropDiv.getElementsByClassName("drop-cover")[0];
@@ -306,13 +303,10 @@ var refreshDroplrSection = function(){
 	])
 	.spread(function(orgToken, boardToken){
 		if(orgToken) {
-			console.log("Render using Trello API");
 			return renderUsingTrelloAPI(orgToken);
 		} else if(boardToken) {
-			console.log("Render using Trello API");
 			return renderUsingTrelloAPI(boardToken);
 		} else {
-			console.log("Render using Power-up API");
 			return renderUsingPowerUpApi();
 		}
 	})

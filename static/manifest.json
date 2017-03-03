@@ -9,6 +9,7 @@
   "capabilities": [
     "attachment-sections",
     "attachment-thumbnail",
+	"board-buttons",
     "callback",
 	"card-buttons",
 	"card-from-url",

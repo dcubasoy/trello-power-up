@@ -16,6 +16,7 @@ var formatDropUrl = function(t, url){
   capture_results = capture_drop_regex.exec(url);
   if(capture_results != null) {
 	  var dropParameters = {
+		"url": url,
 		protocol: capture_results[1],
 		type: capture_results[2],
 		code: capture_results[3],

@@ -13,32 +13,52 @@ var cardButtonCallback = function(t){
   return t.popup({
     title: 'Droplr',
 	url: './card-button.html',
-    height: 135
+    height: 133
+  });
+};
+
+var boardButtonCallback = function(t){
+  return t.popup({
+    title: 'Droplr',
+	url: './board-button.html',
+	
+    height: 250
   });
 };
 
 TrelloPowerUp.initialize({
   'attachment-sections': function(t, options){
-    var claimed = options.entries.filter(function(attachment){
-	  var claimed = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
-      return claimed;
-    });
+    return TrelloPowerUp.Promise.all([
+		t.get('board', 'private', 'hideCoverAttachments', "hide")
+	])
+	.spread(function(hideCoverAttachments){
+		var claimed
+		if(hideCoverAttachments == "hide") {
+			claimed = options.entries.filter(function(attachment){
+				return test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
+			});
+		} else {
+			claimed = options.entries.filter(function(attachment){
+				return test_drop_regex.test(attachment.url);
+			});
+		}
 
-    if(claimed && claimed.length > 0){
-      return [{
-        id: 'droplr', // optional if you aren't using a function for the title
-        claimed: claimed,
-        icon: DROPLR_ICON,
-        title: 'Drops',
-        content: {
-          type: 'iframe',
-          url: t.signUrl('./section.html', { arg: 'you can pass your section args here' }),
-          height: 230
-        }
-      }];
-    } else {
-      return [];
-    }
+		if(claimed && claimed.length > 0){
+			return [{
+				id: 'droplr', // optional if you aren't using a function for the title
+				claimed: claimed,
+				icon: DROPLR_ICON,
+				title: 'Drops',
+				content: {
+				type: 'iframe',
+				url: t.signUrl('./section.html', { arg: 'you can pass your section args here' }),
+					height: 230
+				}
+			}];
+		} else {
+			return [];
+		}
+	});
   },
   'attachment-thumbnail': function(t, options){
 	var dropInfo = formatDropUrl(t, options.url);
@@ -58,6 +78,13 @@ TrelloPowerUp.initialize({
       throw t.NotHandled();
     }
   },
+  'board-buttons': function(t, options) {
+    return [{
+      icon: DROPLR_GRAY_ICON,
+      text: 'Droplr',
+      callback: boardButtonCallback
+    }];
+  },
   'card-buttons': function(t, options) {
     return [{
       icon: DROPLR_GRAY_ICON,
@@ -66,18 +93,30 @@ TrelloPowerUp.initialize({
     }];
   },
   'card-from-url': function(t, options) {
-    var dropInfo = formatDropUrl(t, options.url);
-    if(dropInfo){
-      return {
-        name: options.url,
-        desc: '![' + options.url + '](' + dropInfo.fullsize + ')'
-      };
+	var dropInfo = formatDropUrl(t, options.url);
+	if(dropInfo){
+		return TrelloPowerUp.Promise.all([
+			t.get('board', 'private', 'linkBehavior', 'embed')
+		])
+		.spread(function(savedLinkBehavior){
+			if(savedLinkBehavior === "embed") {
+				return {
+					name: options.url,
+					desc: '![' + options.url + '](' + dropInfo.fullsize + ')'
+				};
+			} else {
+				return {
+					name: options.url,
+					desc: options.url
+				};
+			}
+		});
     } else {
-      throw t.NotHandled();
+		throw t.NotHandled();
     }
   },
   'format-url': function(t, options) {
-    var dropInfo = formatDropUrl(t, options.url);
+	var dropInfo = formatDropUrl(t, options.url);
     if(dropInfo){
 	  return {
         icon: DROPLR_ICON,
