@@ -19,11 +19,22 @@ errorCloseElement.addEventListener('click',
 
 var attachWithCover = function(dropLink, token) {
 	var dropInfo = formatDropUrl(null, dropLink);
-	Trello.setToken(token);
-	return t.card('id', 'cover')
+  var embedInfo = {};
+  var dropTitle = dropLink;
+  Trello.setToken(token);
+
+  return getEmbedInfo(dropLink)
+  .then(function(rawData) {
+    embedInfo = JSON.parse(rawData);
+    if(embedInfo.hasOwnProperty("title")) {
+      dropTitle = embedInfo.title;
+    }
+
+    return t.card('id', 'cover');
+  })
 	.then(function(card) {
 		return new Promise.all([
-			Trello.post('/cards/' + card.id + '/attachments', {url: dropLink, name: dropLink}),
+			Trello.post('/cards/' + card.id + '/attachments', {url: dropLink, name: dropTitle}),
 			Trello.post('/cards/' + card.id + '/attachments', {url: dropInfo.fullsize, name: 'Cover image for drop ' + dropInfo.code}),
 			card.id
 		])
@@ -87,7 +98,6 @@ document.getElementById('attach').addEventListener('click', function(){
 		return getEmbedInfo(dropLink)
 		.then(function(rawData) {
       var embedInfo = JSON.parse(rawData);
-      console.log(JSON.stringify(embedInfo, null, 4));
 			if(embedInfo.hasOwnProperty("title")) {
 				dropTitle = embedInfo.title;
 			}
