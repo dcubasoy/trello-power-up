@@ -15,7 +15,7 @@
   <body style="background-color: #EDEFF0">
     <div id="content">
 		<div id="errorAlert" class="alert alert-danger alert-dismissable collapse">
-			<a href="#" id="errorClose" class="close" aria-label="close">×</a>
+			<a href="#" id="errorClose" class="close" aria-label="close">ï¿½</a>
 			<strong>Error! </strong><span id="errorMessage">Link your Trello account to Droplr to use drops as card covers.</span>
 		</div>
       <div style="height: 100%" id="droplrdrops" class="container-fluid">
@@ -28,14 +28,14 @@
 		</div>
 		<div class="col-xs-9 col-md-9 col-xl-9">
 			<div class="row">
-				<div class="col xs-12 md-12 xl-12 drop-title">Title</div>
+				<div class="col-xs-12 col-md-12 col-xl-12 drop-title">Title</div>
 			</div>
 			<div class="row">
 				<div class="col-xs-12 col-md-12 col-xl-12 quiet added-date">Added date</div>
 			</div>
 			<div class="row"  style="padding-top:10px">
 				<div class="col-xs-12 col-md-12 col-xl-12">
-					<i class="fa fa-external-link quiet" aria-hidden="true"></i> 
+					<i class="fa fa-external-link quiet" aria-hidden="true"></i>
 					<a href="#" class="drop-link quiet" target="_blank">Open Drop </a>
 					<i class="fa fa-window-maximize quiet" aria-hidden="true" style="margin-left: 10px;display: none;"></i>
 					<a href="#" class="drop-cover quiet" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Updating Cover..." style="display: none;">Make Cover </a>
@@ -79,12 +79,12 @@ clipboard.on('success', function(e) {
   setTooltip(e.trigger, 'Copied!');
   hideTooltip(e.trigger);
 });
-    
+
 clipboard.on('error', function(e) {
   setTooltip(e.trigger, 'Failed!');
   hideTooltip(e.trigger);
 });
     </script>
-	
+
   </body>
 </html>

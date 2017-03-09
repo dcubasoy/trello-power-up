@@ -24,32 +24,32 @@ var formatDropUrl = function(t, url){
 		thumbnail: '',
 		fullsize: ''
 	};
-  
-	if(dropParameters.accessCode == 'small' || 
-		dropParameters.accessCode == 'medium' || 
+
+	if(dropParameters.accessCode == 'small' ||
+		dropParameters.accessCode == 'medium' ||
 		dropParameters.accessCode == 'thumbnail')
 	{
 		dropParameters.accessCode = '';
 	}
-  
+
 	if(dropParameters.accessCode.length > 0) {
 	  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/thumbnail';
 	} else {
 	  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/thumbnail';
 	}
-	
+
 	if(dropParameters.accessCode.length > 0) {
 	  dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/medium';
 	} else {
 	  dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/medium';
 	}
-  
+
 	return dropParameters;
   } else {
 	  console.log("This url passed the test but failed to capture: " + url);
 	  return null;
   }
-  
+
 };
 
 var extractDropCodeFromCover = function(t, attachmentName) {
@@ -64,7 +64,7 @@ var extractDropCodeFromCover = function(t, attachmentName) {
 				return null;
 			}
 		}
-		
+
 	} else {
 		capture_results = capture_drop_cover_image_regex.exec(attachmentName);
 		if(capture_results != null) {
@@ -104,7 +104,7 @@ function createCORSRequest(method, url) {
 function getEmbedInfo(dropLink) {
   return new Promise(function(resolve, reject) {
 	  // This is a sample server that supports CORS.
-	  var url = "https://d.pr/oembed?url=" + encodeURI(dropLink) + "&format=json";
+	  var url = "https://power-up.droplr.com/lookup?url=" + encodeURI(dropLink);
 
 	  var xhr = createCORSRequest('GET', url);
 	  if (!xhr) {
