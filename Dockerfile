@@ -1,9 +1,5 @@
-FROM nginx:alpine
-COPY static /usr/share/nginx/html
+FROM mhart/alpine-node:latest
 
-# Custom nginx config to setup CORS headers
-COPY nginx.template /etc/nginx/nginx.conf
-#CMD /bin/sh -c “/etc/nginx/nginx.template > /etc/nginx/nginx.conf 
-
-# Start up nginx server
-CMD ["nginx", "-g", "daemon off;"]
+ADD . .
+EXPOSE 80
+CMD ["node", "name-look-up-test2.js"]
