@@ -11,7 +11,7 @@ var listsSelector = document.getElementById('insertIntoList');
 var errorAlertElement = document.getElementById('errorAlert');
 var errorMessageElement = document.getElementById('errorMessage');
 var errorCloseElement = document.getElementById('errorClose');
-errorCloseElement.addEventListener('click', 
+errorCloseElement.addEventListener('click',
 	function () {
 		errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable collapse");
 		t.sizeTo('#content');
@@ -20,7 +20,7 @@ errorCloseElement.addEventListener('click',
 
 var renderBoardButtonUsingTrelloAPI = function(token) {
 	Trello.setToken(token);
-	return t.board('id', 'name') 
+	return t.board('id', 'name')
 	.then(function(board) {
 		return Promise.all([
 			Trello.get('/board/' + board.id + '/lists')
@@ -31,7 +31,7 @@ var renderBoardButtonUsingTrelloAPI = function(token) {
 		names = res[0].map(function(a){ return a.name });
 
 		listsSelector.innerHTML = '';
-		for(var i = 0; i < res[0].length; i++ ) 
+		for(var i = 0; i < res[0].length; i++ )
 		{
 			listsSelector.options[listsSelector.options.length] = new Option(names[i], listids[i]);
 		}
@@ -68,13 +68,20 @@ t.render(function(){
 });
 
 var createCardWithCover = function(list, description, dropInfo, token) {
-	Trello.setToken(token); 
+	var embedInfo = {};
+	var dropTitle = dropInfo.url;
+	Trello.setToken(token);
 	return new Promise.all([
 		Trello.post('/lists/' + list + '/cards', {name: dropInfo.url, desc: description}),
+		getEmbedInfo(dropInfo.url)
 	])
 	.then(function(res) {
+		embedInfo = JSON.parse(res[1]);
+		if(embedInfo.hasOwnProperty("title")) {
+			dropTitle = embedInfo.title;
+		}
 		return new Promise.all([
-			Trello.post('/cards/' + res[0].id + '/attachments', {url: dropInfo.url, name: dropInfo.url}),
+			Trello.post('/cards/' + res[0].id + '/attachments', {url: dropInfo.url, name: dropTitle}),
 			Trello.post('/cards/' + res[0].id + '/attachments', {url: dropInfo.fullsize, name: 'Cover image for drop ' + dropInfo.code}),
 			res[0].id
 		])
@@ -87,13 +94,20 @@ var createCardWithCover = function(list, description, dropInfo, token) {
 };
 
 var createCard = function(list, description, dropInfo, token) {
-	Trello.setToken(token); 
+	var embedInfo = {};
+	var dropTitle = dropInfo.url;
+	Trello.setToken(token);
 	return new Promise.all([
 		Trello.post('/lists/' + list + '/cards', {name: dropInfo.url, desc: description}),
+		getEmbedInfo(dropInfo.url)
 	])
 	.then(function(res) {
+		embedInfo = JSON.parse(res[1]);
+		if(embedInfo.hasOwnProperty("title")) {
+			dropTitle = embedInfo.title;
+		}
 		return new Promise.all([
-			Trello.post('/cards/' + res[0].id + '/attachments', {url: dropInfo.url, name: dropInfo.url})
+			Trello.post('/cards/' + res[0].id + '/attachments', {url: dropInfo.url, name: dropTitle})
 		])
 	})
 };
@@ -117,13 +131,13 @@ document.getElementById('create-card').addEventListener('click', function(){
 		var btn = $(this);
 		btn.button('loading');
 		var dropInfo = formatDropUrl(null, dropLink);
-		
+
 		if(embedPreview) {
 			description = '![' + dropLink + '](' + dropInfo.fullsize + ')'
 		} else {
 			description = dropLink.url;
 		}
-		
+
 		return Promise.all([
 				t.get('organization', 'private', 'token'),
 				t.get('board', 'private', 'token')
