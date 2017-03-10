@@ -2,8 +2,6 @@
 
 var Promise = TrelloPowerUp.Promise;
 var t = TrelloPowerUp.iframe();
-
-var noembedSelector = document.getElementById('noembed');
 var embedSelector = document.getElementById('embed');
 var hideCoverAttachmentsSelector = document.getElementById('hideCoverAttachments');
 
