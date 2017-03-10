@@ -9,23 +9,20 @@ var hideCoverAttachmentsSelector = document.getElementById('hideCoverAttachments
 
 t.render(function(){
   return Promise.all([
-    t.get('board', 'private', 'linkBehavior'),
+    t.get('board', 'private', 'linkBehavior', "embed"),
 	t.get('board', 'private', 'hideCoverAttachments', "hide")
   ])
-  .spread(function(savedLinkBehavior){
-    if(savedLinkBehavior && /[a-z]+/.test(savedLinkBehavior, hideCoverAttachments)) {
-		console.log(hideCoverAttachments);
-		if(savedLinkBehavior === "embed") {
-			embedSelector.checked = true;
-		} else {
-			noembedSelector.checked = true;
-		}
-		
-		if(hideCoverAttachments === "hide") {
-			hideCoverAttachmentsSelector.checked = true;
-		} else {
-			hideCoverAttachmentsSelector.checked = false;
-		}
+  .spread(function(savedLinkBehavior, hideCoverAttachments){
+	if(savedLinkBehavior === "embed") {
+		embedSelector.checked = true;
+	} else {
+		embedSelector.checked = false;
+	}
+	
+	if(hideCoverAttachments === "hide") {
+		hideCoverAttachmentsSelector.checked = true;
+	} else {
+		hideCoverAttachmentsSelector.checked = false;
 	}
   })
   .then(function(){
