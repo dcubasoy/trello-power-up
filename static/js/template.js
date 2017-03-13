@@ -13,7 +13,7 @@ var cardButtonCallback = function(t){
   return t.popup({
     title: 'Droplr',
 	url: './card-button.html',
-    height: 133
+    height: 200
   });
 };
 
