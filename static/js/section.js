@@ -250,6 +250,7 @@ var renderUsingPowerUpApi = function() {
 	})
 	.then(function(res){
 		urls = res[0].map(function(a){ return a.url; });
+		titles = res[0].map(function(a){ return a.name; });
 
 		dropCount = urls.length;
 		allDropsDiv.innerHTML = '';
@@ -267,7 +268,7 @@ var renderUsingPowerUpApi = function() {
 				imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
 				imageElement.setAttribute("src", dropInfo.thumbnail);
 				titleElement = dropDiv.getElementsByClassName("drop-title")[0];
-				titleElement.innerHTML = urls[i];
+				titleElement.innerHTML = titles[i];
 				dateElement = dropDiv.getElementsByClassName("added-date")[0];
 				dateElement.setAttribute("style", "display: none;");
 				linkElement = dropDiv.getElementsByClassName("drop-link")[0];
