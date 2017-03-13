@@ -20,18 +20,10 @@ var allDropsDiv = document.getElementById('droplrdrops');
 var detailRowTemplate = document.getElementById("detail-row-template")
 
 var errorAlertElement = document.getElementById('errorAlert');
-var infoAlertElement = document.getElementById('infoAlert');
 var errorCloseElement = document.getElementById('errorClose');
-var infoCloseElement = document.getElementById('infoClose');
 errorCloseElement.addEventListener('click',
 	function () {
 		errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable collapse");
-		t.sizeTo('#content');
-	}
-);
-infoCloseElement.addEventListener('click',
-	function () {
-		infoAlertElement.setAttribute("class", "alert alert-danger alert-dismissable collapse");
 		t.sizeTo('#content');
 	}
 );
@@ -104,8 +96,12 @@ var clearCardCover = function (card) {
 var authorizeCardCoverEventListener = function (domElement) {
 	domElement.addEventListener('click', function() {
 		errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
-		infoAlertElement.setAttribute("class", "alert alert-info alert-dismissable");
 		t.sizeTo('#content');
+		t.popup({
+			title: 'Get More Droplr Features',
+			url: 'authorize.html',
+			height: 140,
+		});
 	});
 
 }
