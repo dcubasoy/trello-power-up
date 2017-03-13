@@ -111,7 +111,7 @@ document.getElementById('attach').addEventListener('click', function(){
 		})
 		.then(function(){
 			btn.button('reset');
-			t.closePopup();
+			//t.closePopup();
 		})
 		.catch(function(reason) {
 			btn.button('reset');
