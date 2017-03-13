@@ -47,7 +47,12 @@ var attachWithCover = function(dropLink, token) {
 }
 
 var accessRequired = function() {
-	return Promise.reject("Link your Trello account to Droplr to use drops as card covers.");
+	return t.popup({
+		title: 'Get More Droplr Features',
+		url: 'authorize.html',
+		height: 140,
+	});
+	//return Promise.reject("Link your Trello account to Droplr to use drops as card covers.");
 }
 
 document.getElementById('make-cover').addEventListener('click', function(){
