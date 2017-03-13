@@ -1,7 +1,7 @@
 {
   "name": "Droplr",
   "description": "",
-  "details": "The [Droplr](https://droplr.com) power-up expands your drop links into rich content for your Trello cards.\n\n - View information about your drop links\n- Copy drop links to your clipboard with a single click\n - Open drop links in a new window\n - Easily use a drop as a card cover\n\n###Screenshot\n![Droplr Power-up Screenshot](https://power-up.droplr.com/images/droplr-and-trello.PNG)",
+  "details": "The [Droplr](https://droplr.com) power-up expands your drop links into rich content for your Trello cards.\n\n - View information about your drop links\n - Copy drop links to your clipboard with a single click\n - Open drop links in a new window\n - Easily use a drop as a card cover\n\n###Screenshot\n![Droplr Power-up Screenshot](https://power-up.droplr.com/images/droplr-and-trello.PNG)",
   "icon": {
     "url": "./images/logo.png"
   },
