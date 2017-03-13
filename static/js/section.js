@@ -96,7 +96,6 @@ var clearCardCover = function (card) {
 var authorizeCardCoverEventListener = function (domElement) {
 	domElement.addEventListener('click', function() {
 		errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
-		t.sizeTo('#content');
 		t.popup({
 			title: 'Get More Droplr Features',
 			url: 'authorize.html',
