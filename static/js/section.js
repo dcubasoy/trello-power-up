@@ -104,7 +104,7 @@ var clearCardCover = function (card) {
 var authorizeCardCoverEventListener = function (domElement) {
 	domElement.addEventListener('click', function() {
 		errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
-		infoAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+		infoAlertElement.setAttribute("class", "alert alert-info alert-dismissable");
 		t.sizeTo('#content');
 	});
 
