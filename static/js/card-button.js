@@ -83,11 +83,19 @@ document.getElementById('make-cover').addEventListener('click', function(){
 			btn.button('reset');
 			if(typeof reason === "string") {
 				errorMessageElement.innerHTML = reason;
+				errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+				t.sizeTo('#content');
 			} else {
-				errorMessageElement.innerHTML = "Something went wrong"
+				if(reason.hasOwnProperty("responseText") && reason.responseText == "invalid token") {
+					accessRequired();
+				} else {
+					errorMessageElement.innerHTML = "Something went wrong";
+					errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+					t.sizeTo('#content');
+				}
+				
 			}
-			errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
-			t.sizeTo('#content');
+			
 		});
 	}
 })
