@@ -321,6 +321,10 @@ var refreshDroplrSection = function(){
 	})
 	.catch(function(reason) {
 		console.log(reason);
+		return renderUsingPowerUpApi()
+		.then(function() {
+			return t.sizeTo('#content');
+		})
 	});
 }
 
