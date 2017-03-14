@@ -64,7 +64,13 @@ t.render(function(){
 		return t.sizeTo('#content');
 	})
 	.catch(function(reason) {
-		console.log(reason);
+		if(reason.hasOwnProperty("responseText") && reason.responseText == "invalid token") {
+			accessRequired();
+		} else {
+			errorMessageElement.innerHTML = "Something went wrong";
+			errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+			t.sizeTo('#content');
+		}
 	});
 });
 
