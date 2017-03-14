@@ -68,16 +68,21 @@ document.getElementById('make-cover').addEventListener('click', function(){
 		])
 		.spread(function(orgToken, boardToken){
 			if(orgToken) {
-				return attachWithCover(dropLink, orgToken);
+				return attachWithCover(dropLink, orgToken)
+				.then(function(){
+					btn.button('reset');
+					t.closePopup();
+				});
 			} else if(boardToken) {
-				return attachWithCover(dropLink, boardToken);
+				return attachWithCover(dropLink, boardToken)
+				.then(function(){
+					btn.button('reset');
+					t.closePopup();
+				});
 			} else {
+				btn.button('reset');
 				return accessRequired();
 			}
-		})
-		 .then(function(){
-			btn.button('reset');
-			//t.closePopup();
 		})
 		.catch(function(reason) {
 			btn.button('reset');
@@ -93,7 +98,6 @@ document.getElementById('make-cover').addEventListener('click', function(){
 					errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
 					t.sizeTo('#content');
 				}
-				
 			}
 			
 		});

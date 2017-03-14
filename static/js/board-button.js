@@ -40,9 +40,10 @@ var renderBoardButtonUsingTrelloAPI = function(token) {
 };
 
 var renderBoardButtonUsingPowerUpApi = function() {
-	errorMessageElement.innerHTML = "Link your Trello account to Droplr to create cards from here";
-	errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
-	return t.sizeTo('#content');
+	accessRequired();
+	//errorMessageElement.innerHTML = "Link your Trello account to Droplr to create cards from here";
+	//errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+	//return t.sizeTo('#content');
 }
 
 t.render(function(){
@@ -113,7 +114,13 @@ var createCard = function(list, description, dropInfo, token) {
 };
 
 var accessRequired = function() {
-	return Promise.reject("Link your Trello account to Droplr to create cards from here");
+	return t.popup({
+			title: 'Get More Droplr Features',
+			url: 'authorize.html',
+			height: 140,
+	});
+	//return Promise.reject("Link your Trello account to Droplr to use drops as card covers.");
+}
 }
 
 var notImplemented = function() {
@@ -146,33 +153,53 @@ document.getElementById('create-card').addEventListener('click', function(){
 			//return accessRequired();
 			if(orgToken) {
 				if(createCover) {
-					return createCardWithCover(list, description, dropInfo, orgToken);
+					return createCardWithCover(list, description, dropInfo, orgToken)
+					.then(function(){
+						btn.button('reset');
+						t.closePopup();
+					});
 				} else {
-					return createCard(list, description, dropInfo, orgToken);
+					return createCard(list, description, dropInfo, orgToken)
+					.then(function(){
+						btn.button('reset');
+						t.closePopup();
+					});
 				}
 			} else if(boardToken) {
 				if(createCover) {
-					return createCardWithCover(list, description, dropInfo, boardToken);
+					return createCardWithCover(list, description, dropInfo, boardToken)
+					.then(function(){
+						btn.button('reset');
+						t.closePopup();
+					});
 				} else {
-					return createCard(list, description, dropInfo, boardToken);
+					return createCard(list, description, dropInfo, boardToken)
+					.then(function(){
+						btn.button('reset');
+						t.closePopup();
+					});
 				}
 			} else {
+				btn.button('reset');
 				return accessRequired();
 			}
-		})
-		 .then(function(){
-			btn.button('reset');
-			t.closePopup();
 		})
 		.catch(function(reason) {
 			btn.button('reset');
 			if(typeof reason === "string") {
 				errorMessageElement.innerHTML = reason;
+				errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+				t.sizeTo('#content');
 			} else {
-				errorMessageElement.innerHTML = "Something went wrong"
+				if(reason.hasOwnProperty("responseText") && reason.responseText == "invalid token") {
+					accessRequired();
+				} else {
+					errorMessageElement.innerHTML = "Something went wrong";
+					errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+					t.sizeTo('#content');
+				}
 			}
-			errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
-			t.sizeTo('#content');
+
 		});
 	}
 })
