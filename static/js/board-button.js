@@ -120,8 +120,7 @@ var accessRequired = function() {
 			height: 140,
 	});
 	//return Promise.reject("Link your Trello account to Droplr to use drops as card covers.");
-}
-}
+};
 
 var notImplemented = function() {
 	return Promise.reject("Not implemented yet.");
