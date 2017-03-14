@@ -1,6 +1,7 @@
 /* global TrelloPowerUp */
 var DROPLR_ICON = './images/logo.png';
 var DROPLR_GRAY_ICON = './images/icn.svg';
+var DROPLR_WHITE_ICON = './images/icn-white.svg';
 var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivf]\/\w{3,8}/
 var test_drop_cover_image_regex = /^Cover image for drop /
 // [1] = Protocol
@@ -80,7 +81,7 @@ TrelloPowerUp.initialize({
   },
   'board-buttons': function(t, options) {
     return [{
-      icon: DROPLR_GRAY_ICON,
+      icon: DROPLR_WHITE_ICON,
       text: 'Droplr',
       callback: boardButtonCallback
     }];
