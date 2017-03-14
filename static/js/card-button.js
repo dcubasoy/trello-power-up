@@ -47,10 +47,13 @@ var attachWithCover = function(dropLink, token) {
 }
 
 var accessRequired = function() {
-	return t.popup({
-		title: 'Get More Droplr Features',
-		url: 'authorize.html',
-		height: 140,
+	return t.closePopup()
+	.then(function(){
+		return t.popup({
+			title: 'Get More Droplr Features',
+			url: 'authorize.html',
+			height: 140,
+		});
 	});
 	//return Promise.reject("Link your Trello account to Droplr to use drops as card covers.");
 }
@@ -77,7 +80,7 @@ document.getElementById('make-cover').addEventListener('click', function(){
 		})
 		 .then(function(){
 			btn.button('reset');
-			t.closePopup();
+			//t.closePopup();
 		})
 		.catch(function(reason) {
 			btn.button('reset');
@@ -111,7 +114,7 @@ document.getElementById('attach').addEventListener('click', function(){
 		})
 		.then(function(){
 			btn.button('reset');
-			//t.closePopup();
+			t.closePopup();
 		})
 		.catch(function(reason) {
 			btn.button('reset');
