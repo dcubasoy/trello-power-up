@@ -1,6 +1,6 @@
 /* global TrelloPowerUp */
 var DROPLR_ICON = './images/logo.png';
-var DROPLR_GRAY_ICON = './images/logo-gray.png';
+var DROPLR_GRAY_ICON = './images/icn.svg';
 var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivf]\/\w{3,8}/
 var test_drop_cover_image_regex = /^Cover image for drop /
 // [1] = Protocol
