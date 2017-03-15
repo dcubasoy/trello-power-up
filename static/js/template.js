@@ -38,7 +38,7 @@ TrelloPowerUp.initialize({
 				isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
 				if(isBasicDrop) {
 					return true;
-				} else if(couldBeDrop(attachment.url) {
+				} else if(couldBeDrop(attachment.url)) {
 					console.log(attachment.url + " might be a drop link, still need to verify with embed service");
 					mightBeDrops.push(attachment.url);
 					return false;
@@ -51,7 +51,7 @@ TrelloPowerUp.initialize({
 				isBasicDrop = test_drop_regex.test(attachment.url);
 				if(isBasicDrop) {
 					return true;
-				} else if(couldBeDrop(attachment.url) {
+				} else if(couldBeDrop(attachment.url)) {
 					console.log(attachment.url + " might be a drop link, still need to verify with embed service");
 					mightBeDrops.push(attachment.url);
 					return false;
