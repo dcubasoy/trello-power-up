@@ -32,7 +32,8 @@ TrelloPowerUp.initialize({
 	.spread(function(hideCoverAttachments){
 		var claimed
 		var isBasicDrop;
-		var mightBeDrops = []
+		var needsMoreAnalysis = []
+		var unknownLinks = []
 		if(hideCoverAttachments == "hide") {
 			claimed = options.entries.filter(function(attachment){
 				isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
@@ -40,7 +41,8 @@ TrelloPowerUp.initialize({
 					return true;
 				} else if(couldBeDrop(attachment.url)) {
 					console.log(attachment.url + " might be a drop link, still need to verify with embed service");
-					mightBeDrops.push(attachment.url);
+					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
+					unknownLinks.push(attachment.url);
 					return false;
 				} else {
 					return false;
@@ -53,7 +55,8 @@ TrelloPowerUp.initialize({
 					return true;
 				} else if(couldBeDrop(attachment.url)) {
 					console.log(attachment.url + " might be a drop link, still need to verify with embed service");
-					mightBeDrops.push(attachment.url);
+					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
+					unknownLinks.push(attachment.url);
 					return false;
 				} else {
 					return false;
@@ -61,7 +64,20 @@ TrelloPowerUp.initialize({
 			});
 		}
 		
-		console.log("Here is a list of URLs that need additional analysis:\n" + JSON.stringify(mightBeDrops, null, 4));
+		console.log("Here is a list of URLs that need additional analysis:\n" + JSON.stringify(unknownLinks, null, 4));
+		
+		TrelloPowerUp.Promise.all(needsMoreAnalysis)
+		.then(function(results) {
+			var embedInfo;
+			for(var i = 0; i < results.length; i++) {
+				embedInfo = JSON.parse(results[i]);
+				if(embedInfo.hasOwnProperty("shortLink")) {
+					console.log(unknownLinks[i] + " is a drop!");
+					claimed.push(unknownLinks[i]);
+				}
+			}
+		}
+		
 
 		if(claimed && claimed.length > 0){
 			return [{
