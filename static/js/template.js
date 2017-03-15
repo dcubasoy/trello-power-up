@@ -71,7 +71,7 @@ TrelloPowerUp.initialize({
 			var embedInfo;
 			for(var i = 0; i < results.length; i++) {
 				embedInfo = JSON.parse(results[i]);
-				if(embedInfo.hasOwnProperty("shortLink")) {
+				if(embedInfo.hasOwnProperty("code")) {
 					console.log(unknownLinks[i] + " is a drop!");
 					claimed.push(unknownLinks[i]);
 				}
