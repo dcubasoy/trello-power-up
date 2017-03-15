@@ -76,7 +76,7 @@ TrelloPowerUp.initialize({
 					claimed.push(unknownLinks[i]);
 				}
 			}
-		}
+		});
 		
 
 		if(claimed && claimed.length > 0){
