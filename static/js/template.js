@@ -30,10 +30,9 @@ TrelloPowerUp.initialize({
 		t.get('board', 'private', 'hideCoverAttachments', "hide")
 	])
 	.spread(function(hideCoverAttachments){
-		var claimed
 		var isBasicDrop;
 		var needsMoreAnalysis = []
-		var unknownLinks = []
+		var unknownAttachments = []
 		var claimed = [];
 		if(hideCoverAttachments == "hide") {
 			claimed = options.entries.filter(function(attachment){
@@ -42,7 +41,7 @@ TrelloPowerUp.initialize({
 					return true;
 				} else if(couldBeDrop(attachment.url)) {
 					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
-					unknownLinks.push(attachment.url);
+					unknownAttachments.push(attachment);
 					return false;
 				} else {
 					return false;
@@ -55,7 +54,7 @@ TrelloPowerUp.initialize({
 					return true;
 				} else if(couldBeDrop(attachment.url)) {
 					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
-					unknownLinks.push(attachment.url);
+					unknownAttachments.push(attachment);
 					return false;
 				} else {
 					return false;
@@ -70,7 +69,7 @@ TrelloPowerUp.initialize({
 			for(var i = 0; i < results.length; i++) {
 				embedInfo = JSON.parse(results[i]);
 				if(embedInfo.hasOwnProperty("code")) {
-					claimed.push(unknownLinks[i]);
+					claimed.push(unknownAttachments[i]);
 				}
 			}
 		});
