@@ -1,4 +1,6 @@
 var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivf]\/\w{3,8}/
+var test_might_be_drop = /\/\w{3,8}$/
+var test_might_be_drop_with_password = /\/\w{3,8}\/\w*$/
 var test_drop_cover_image_regex = /^Cover image for drop /
 var test_drop_cover_image_regex2 = /^\w{3,8}\.png$/
 // [1] = Protocol
@@ -8,6 +10,10 @@ var test_drop_cover_image_regex2 = /^\w{3,8}\.png$/
 var capture_drop_regex = /^(http|https):\/\/d\.pr\/([ivf])\/(\w{3,8})\/?(\w*)\/?/
 var capture_drop_cover_image_regex = /^Cover image for drop (\w*)/
 var capture_drop_cover_image_regex2 = /^(\w{3,8})\.png$/
+
+var couldBeDrop = function(url) {
+	return test_might_be_drop.test(url) || test_might_be_drop_with_password.test(url);
+}
 
 var formatDropUrl = function(t, url){
   if(!test_drop_regex.test(url)){

@@ -2,13 +2,10 @@
 var DROPLR_ICON = './images/logo.png';
 var DROPLR_GRAY_ICON = './images/icn.svg';
 var DROPLR_WHITE_ICON = './images/icn-white.svg';
-var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivf]\/\w{3,8}/
-var test_drop_cover_image_regex = /^Cover image for drop /
 // [1] = Protocol
 // [2] = Drop Type
 // [3] = Drop Code
 // [4] = Drop Access Code
-var capture_drop_regex = /^(http|https):\/\/d\.pr\/([ivf])\/(\w{3,8})\/?(\w*)\/?/
 
 var cardButtonCallback = function(t){
   return t.popup({
@@ -34,15 +31,37 @@ TrelloPowerUp.initialize({
 	])
 	.spread(function(hideCoverAttachments){
 		var claimed
+		var isBasicDrop;
+		var mightBeDrops = []
 		if(hideCoverAttachments == "hide") {
 			claimed = options.entries.filter(function(attachment){
-				return test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
+				isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
+				if(isBasicDrop) {
+					return true;
+				} else if(couldBeDrop(attachment.url) {
+					console.log(attachment.url + " might be a drop link, still need to verify with embed service");
+					mightBeDrops.push(attachment.url);
+					return false;
+				} else {
+					return false;
+				}
 			});
 		} else {
 			claimed = options.entries.filter(function(attachment){
-				return test_drop_regex.test(attachment.url);
+				isBasicDrop = test_drop_regex.test(attachment.url);
+				if(isBasicDrop) {
+					return true;
+				} else if(couldBeDrop(attachment.url) {
+					console.log(attachment.url + " might be a drop link, still need to verify with embed service");
+					mightBeDrops.push(attachment.url);
+					return false;
+				} else {
+					return false;
+				}
 			});
 		}
+		
+		console.log("Here is a list of URLs that need additional analysis:\n" + JSON.stringify(mightBeDrops, null, 4));
 
 		if(claimed && claimed.length > 0){
 			return [{
@@ -51,8 +70,8 @@ TrelloPowerUp.initialize({
 				icon: DROPLR_ICON,
 				title: 'Drops',
 				content: {
-				type: 'iframe',
-				url: t.signUrl('./section.html', { arg: 'you can pass your section args here' }),
+					type: 'iframe',
+					url: t.signUrl('./section.html', { arg: 'you can pass your section args here' }),
 					height: 230
 				}
 			}];
