@@ -14,7 +14,7 @@ var updateClaims = function(url) {
 	}
 };
 
-var claimed = function(url) {
+var isClaimed = function(url) {
 	return uniqueClaims[url];
 };
 
@@ -48,7 +48,7 @@ TrelloPowerUp.initialize({
 	.then(function(settings){
 		if(settings[0] == "hide") {
 			claimed = options.entries.filter(function(attachment){
-				if(claimed(attachment.url)) {
+				if(isClaimed(attachment.url)) {
 					return true;
 				} else {
 					isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
@@ -66,7 +66,7 @@ TrelloPowerUp.initialize({
 			});
 		} else {
 			claimed = options.entries.filter(function(attachment){
-				if(claimed(attachment.url)) {
+				if(isClaimed (attachment.url)) {
 					return true;
 				} else {
 					isBasicDrop = test_drop_regex.test(attachment.url);
