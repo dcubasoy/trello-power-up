@@ -62,8 +62,7 @@ TrelloPowerUp.initialize({
 				}
 			});
 		}
-	})
-	.then(function() {
+		
 		return TrelloPowerUp.Promise.all(needsMoreAnalysis);
 	})
 	.then(function(results) {
