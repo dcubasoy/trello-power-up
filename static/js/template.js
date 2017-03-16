@@ -8,15 +8,15 @@ var uniqueClaims = {};
 // [3] = Drop Code
 // [4] = Drop Access Code
 
-var updateClaims(url) {
+var updateClaims = function(url) {
 	if(!uniqueClaims[url]) {
 		uniqueClaims[url] = true;
 	}
-}
+};
 
-var claimed(url) {
+var claimed = function(url) {
 	return uniqueClaims[url];
-}
+};
 
 var cardButtonCallback = function(t){
   return t.popup({
