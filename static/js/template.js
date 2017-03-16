@@ -148,7 +148,7 @@ TrelloPowerUp.initialize({
 			// console.log(reason);
 			// return [];
 		// });
-	});
+	//});
   },
   'attachment-thumbnail': function(t, options){
 	var dropInfo = formatDropUrl(t, options.url);
