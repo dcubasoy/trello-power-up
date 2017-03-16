@@ -2,10 +2,21 @@
 var DROPLR_ICON = './images/logo.png';
 var DROPLR_GRAY_ICON = './images/icn.svg';
 var DROPLR_WHITE_ICON = './images/icn-white.svg';
+var uniqueClaims = {};
 // [1] = Protocol
 // [2] = Drop Type
 // [3] = Drop Code
 // [4] = Drop Access Code
+
+var updateClaims(url) {
+	if(!uniqueClaims[url]) {
+		uniqueClaims[url] = true;
+	}
+}
+
+var claimed(url) {
+	return uniqueClaims[url];
+}
 
 var cardButtonCallback = function(t){
   return t.popup({
@@ -37,28 +48,38 @@ TrelloPowerUp.initialize({
 	.then(function(settings){
 		if(settings[0] == "hide") {
 			claimed = options.entries.filter(function(attachment){
-				isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
-				if(isBasicDrop) {
+				if(claimed(attachment.url)) {
 					return true;
-				} else if(couldBeDrop(attachment.url)) {
-					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
-					unknownAttachments.push(attachment);
-					return false;
 				} else {
-					return false;
+					isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
+					if(isBasicDrop) {
+						updateClaims(attachment.url);
+						return true;
+					} else if(couldBeDrop(attachment.url)) {
+						needsMoreAnalysis.push(getEmbedInfo(attachment.url));
+						unknownAttachments.push(attachment);
+						return false;
+					} else {
+						return false;
+					}
 				}
 			});
 		} else {
 			claimed = options.entries.filter(function(attachment){
-				isBasicDrop = test_drop_regex.test(attachment.url);
-				if(isBasicDrop) {
+				if(claimed(attachment.url)) {
 					return true;
-				} else if(couldBeDrop(attachment.url)) {
-					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
-					unknownAttachments.push(attachment);
-					return false;
 				} else {
-					return false;
+					isBasicDrop = test_drop_regex.test(attachment.url);
+					if(isBasicDrop) {
+						updateClaims(attachment.url);
+						return true;
+					} else if(couldBeDrop(attachment.url)) {
+						needsMoreAnalysis.push(getEmbedInfo(attachment.url));
+						unknownAttachments.push(attachment);
+						return false;
+					} else {
+						return false;
+					}
 				}
 			});
 		}
@@ -76,7 +97,8 @@ TrelloPowerUp.initialize({
 			if(embedInfo.hasOwnProperty("code")) {
 				claimed.push(unknownAttachments[i]);
 				console.log(unknownAttachments[i].url + " appears to be an active drop");
-				} else {
+				updateClaims(unknownAttachments[i].url);
+			} else {
 				console.log(unknownAttachments[i].url + " is NOT a drop");
 			}
 		}
