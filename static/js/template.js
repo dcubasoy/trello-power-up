@@ -26,23 +26,24 @@ var boardButtonCallback = function(t){
 
 TrelloPowerUp.initialize({
   'attachment-sections': function(t, options){
-    return TrelloPowerUp.Promise.all([
+    var isBasicDrop;
+	var needsMoreAnalysis = []
+	var unknownAttachments = []
+	var claimed = [];
+	return TrelloPowerUp.Promise.all([
 		t.get('board', 'private', 'hideCoverAttachments', "hide")
 	])
 	.spread(function(hideCoverAttachments){
-		var isBasicDrop;
-		var needsMoreAnalysis = []
-		var unknownAttachments = []
-		var claimed = [];
+		
 		if(hideCoverAttachments == "hide") {
 			claimed = options.entries.filter(function(attachment){
 				isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
 				if(isBasicDrop) {
 					return true;
 				} else if(couldBeDrop(attachment.url)) {
-					//needsMoreAnalysis.push(getEmbedInfo(attachment.url));
+					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
 					unknownAttachments.push(attachment);
-					return true;
+					return false;
 				} else {
 					return false;
 				}
@@ -53,7 +54,7 @@ TrelloPowerUp.initialize({
 				if(isBasicDrop) {
 					return true;
 				} else if(couldBeDrop(attachment.url)) {
-					//needsMoreAnalysis.push(getEmbedInfo(attachment.url));
+					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
 					unknownAttachments.push(attachment);
 					return true;
 				} else {
@@ -61,7 +62,22 @@ TrelloPowerUp.initialize({
 				}
 			});
 		}
-		
+	})
+	.then(function() {
+		return TrelloPowerUp.Promise.all(needsMoreAnalysis);
+	})
+	.then(function(results) {
+		for(var i = 0; i < results.length; i++) {
+			embedInfo = JSON.parse(results[i]);
+			if(embedInfo.hasOwnProperty("code")) {
+				claimed.push(unknownAttachments[i]);
+				console.log(unknownAttachments[i].url + " appears to be an active drop");
+				} else {
+				console.log(unknownAttachments[i].url + " is NOT a drop");
+			}
+		}
+	})
+	.then(function() {
 		if(claimed && claimed.length > 0){
 			return [{
 				id: 'droplr', // optional if you aren't using a function for the title
@@ -77,6 +93,23 @@ TrelloPowerUp.initialize({
 		} else {
 			return [];
 		}
+	});
+		
+		// if(claimed && claimed.length > 0){
+			// return [{
+				// id: 'droplr', // optional if you aren't using a function for the title
+				// claimed: claimed,
+				// icon: DROPLR_ICON,
+				// title: 'Drops',
+				// content: {
+					// type: 'iframe',
+					// url: t.signUrl('./section.html', { arg: 'you can pass your section args here' }),
+					// height: 230
+				// }
+			// }];
+		// } else {
+			// return [];
+		// }
 		
 		// return TrelloPowerUp.Promise.all(needsMoreAnalysis)
 		// .then(function(results) {
