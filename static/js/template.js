@@ -67,8 +67,13 @@ TrelloPowerUp.initialize({
 		return TrelloPowerUp.Promise.all(needsMoreAnalysis);
 	})
 	.then(function(results) {
+		console.log("Results length: " + results.length);
+		console.log("Raw results:\n" + JSON.stringify(results, null, 4));
 		for(var i = 0; i < results.length; i++) {
+			console.log("Loop iteration:" + i);
 			embedInfo = JSON.parse(results[i]);
+			console.log("Embed Info:\n" + JSON.stringify(embedInfo, null, 4))
+			
 			if(embedInfo.hasOwnProperty("code")) {
 				claimed.push(unknownAttachments[i]);
 				console.log(unknownAttachments[i].url + " appears to be an active drop");
