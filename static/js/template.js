@@ -70,10 +70,14 @@ TrelloPowerUp.initialize({
 				embedInfo = JSON.parse(results[i]);
 				if(embedInfo.hasOwnProperty("code")) {
 					claimed.push(unknownAttachments[i]);
+					console.log(unknownAttachments[i].url + " appears to be an active drop");
+				} else {
+					console.log(unknownAttachments[i].url + " is NOT a drop");
 				}
 			}
 		});
 		
+		console.log("Here is what the claimed array looks like: " + JSON.stringify(claimed, null, 4));
 
 		if(claimed && claimed.length > 0){
 			return [{
