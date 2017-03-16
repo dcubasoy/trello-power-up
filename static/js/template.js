@@ -40,9 +40,9 @@ TrelloPowerUp.initialize({
 				if(isBasicDrop) {
 					return true;
 				} else if(couldBeDrop(attachment.url)) {
-					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
+					//needsMoreAnalysis.push(getEmbedInfo(attachment.url));
 					unknownAttachments.push(attachment);
-					return false;
+					return true;
 				} else {
 					return false;
 				}
@@ -53,52 +53,68 @@ TrelloPowerUp.initialize({
 				if(isBasicDrop) {
 					return true;
 				} else if(couldBeDrop(attachment.url)) {
-					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
+					//needsMoreAnalysis.push(getEmbedInfo(attachment.url));
 					unknownAttachments.push(attachment);
-					return false;
+					return true;
 				} else {
 					return false;
 				}
 			});
 		}
 		
-		return TrelloPowerUp.Promise.all(needsMoreAnalysis)
-		.then(function(results) {
-			console.log("Here are the results of analyzing the unknown drops:\n" + JSON.stringify(results, null, 4));
-			var embedInfo;
-			for(var i = 0; i < results.length; i++) {
-				embedInfo = JSON.parse(results[i]);
-				if(embedInfo.hasOwnProperty("code")) {
-					claimed.push(unknownAttachments[i]);
-					console.log(unknownAttachments[i].url + " appears to be an active drop");
-				} else {
-					console.log(unknownAttachments[i].url + " is NOT a drop");
+		if(claimed && claimed.length > 0){
+			return [{
+				id: 'droplr', // optional if you aren't using a function for the title
+				claimed: claimed,
+				icon: DROPLR_ICON,
+				title: 'Drops',
+				content: {
+					type: 'iframe',
+					url: t.signUrl('./section.html', { arg: 'you can pass your section args here' }),
+					height: 230
 				}
-			}
-		})
-		.then(function() {
-			console.log("Here is what the claimed array looks like: " + JSON.stringify(claimed, null, 4));
-
-			if(claimed && claimed.length > 0){
-				return [{
-					id: 'droplr', // optional if you aren't using a function for the title
-					claimed: claimed,
-					icon: DROPLR_ICON,
-					title: 'Drops',
-					content: {
-						type: 'iframe',
-						url: t.signUrl('./section.html', { arg: 'you can pass your section args here' }),
-						height: 230
-					}
-				}];
-			} else {
-				return [];
-			}
-		})
-		.catch(function(reason) {
-			console.log(reason);
+			}];
+		} else {
 			return [];
-		});
+		}
+		
+		// return TrelloPowerUp.Promise.all(needsMoreAnalysis)
+		// .then(function(results) {
+			// console.log("Here are the results of analyzing the unknown drops:\n" + JSON.stringify(results, null, 4));
+			// var embedInfo;
+			// for(var i = 0; i < results.length; i++) {
+				// embedInfo = JSON.parse(results[i]);
+				// if(embedInfo.hasOwnProperty("code")) {
+					// claimed.push(unknownAttachments[i]);
+					// console.log(unknownAttachments[i].url + " appears to be an active drop");
+				// } else {
+					// console.log(unknownAttachments[i].url + " is NOT a drop");
+				// }
+			// }
+		// })
+		// .then(function() {
+			// console.log("Here is what the claimed array looks like: " + JSON.stringify(claimed, null, 4));
+
+			// if(claimed && claimed.length > 0){
+				// return [{
+					// id: 'droplr', // optional if you aren't using a function for the title
+					// claimed: claimed,
+					// icon: DROPLR_ICON,
+					// title: 'Drops',
+					// content: {
+						// type: 'iframe',
+						// url: t.signUrl('./section.html', { arg: 'you can pass your section args here' }),
+						// height: 230
+					// }
+				// }];
+			// } else {
+				// return [];
+			// }
+		// })
+		// .catch(function(reason) {
+			// console.log(reason);
+			// return [];
+		// });
 	});
   },
   'attachment-thumbnail': function(t, options){
