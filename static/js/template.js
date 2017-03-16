@@ -33,9 +33,8 @@ TrelloPowerUp.initialize({
 	return TrelloPowerUp.Promise.all([
 		t.get('board', 'private', 'hideCoverAttachments', "hide")
 	])
-	.spread(function(hideCoverAttachments){
-		
-		if(hideCoverAttachments == "hide") {
+	.then(function(settings){
+		if(settings[0] == "hide") {
 			claimed = options.entries.filter(function(attachment){
 				isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
 				if(isBasicDrop) {
@@ -56,7 +55,7 @@ TrelloPowerUp.initialize({
 				} else if(couldBeDrop(attachment.url)) {
 					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
 					unknownAttachments.push(attachment);
-					return true;
+					return false;
 				} else {
 					return false;
 				}
