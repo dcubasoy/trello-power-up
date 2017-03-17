@@ -39,6 +39,9 @@ var couldBeDrop = function(url) {
 }
 
 var formatDropUrl = function(t, shortLink, url){
+  console.log("formatDropUrl called");
+  console.log(" - shortLink: " + shortLink);
+  console.log(" - url: " + url);
   if(url == undefined) {
 	  url = shortLink;
   }
