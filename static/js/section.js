@@ -341,7 +341,7 @@ var refreshDroplrSection = function(){
 	return Promise.all([
 			t.get('organization', 'private', 'token'),
 			t.get('board', 'private', 'token'),
-			t.get('card', 'private', 'uniqueClaims', {});
+			t.get('card', 'private', 'uniqueClaims', {})
 	])
 	.spread(function(orgToken, boardToken, claims){
 		loadClaims(claims);
