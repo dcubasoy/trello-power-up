@@ -23,7 +23,7 @@ var getDropInfo = function(url) {
 					size: dropInfo.size,
 					privacy: dropInfo.privacy,
 					password: dropInfo.password,
-					shortLink: dropInfo.shortLink,
+					shortLink: dropInfo.shortlink,
 					views: dropInfo.views,
 					drop_type: dropInfo.drop_type
 				}
