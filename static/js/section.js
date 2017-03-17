@@ -344,6 +344,7 @@ var refreshDroplrSection = function(){
 			t.get('card', 'private', 'uniqueClaims', {})
 	])
 	.spread(function(orgToken, boardToken, claims){
+		console.log(JSON.stringify(claims, null, 4));
 		loadClaims(claims);
 		if(orgToken) {
 			return renderUsingTrelloAPI(orgToken);
