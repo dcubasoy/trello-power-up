@@ -64,7 +64,8 @@ errorCloseElement.addEventListener('click',
 );
 
 var isDropLink = function(attachment) {
-	return test_drop_regex.test(attachment.url);
+	//return test_drop_regex.test(attachment.url);
+	return isClaimed(attachment.url);
 }
 
 var isDropCoverImage = function(attachment) {
@@ -226,7 +227,7 @@ var renderUsingTrelloAPI = function(token) {
 	for(i = 0; i < dropCount; i++ )
 	{
 		if(!dropInfoLookup.has(urls[i])) {
-			dropInfoLookup.set(urls[i], formatDropUrl(1, urls[i]));
+			dropInfoLookup.set(urls[i], formatDropUrl(null, getClaim(urls[i]).shortLink, urls[i]));
 		}
 		dropInfo = dropInfoLookup.get(urls[i]);
 		if(dropInfo != null) {
@@ -297,12 +298,11 @@ var renderUsingPowerUpApi = function() {
 		for(i = 0; i < dropCount; i++ )
 		{
 			if(!dropInfoLookup.has(urls[i])) {
-				dropInfoLookup.set(urls[i], formatDropUrl(1, urls[i]));
+				dropInfoLookup.set(urls[i], formatDropUrl(null, getClaim(urls[i]).shortLink, urls[i]));
 			}
 			dropInfo = dropInfoLookup.get(urls[i]);
 			if(dropInfo != null) {
 				dropCode = dropInfo.code
-				dropInfo = formatDropUrl(1, urls[i]);
 				dropDiv = detailRowTemplate.cloneNode(true);
 				dropDiv.setAttribute("id", dropCode);
 				imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];

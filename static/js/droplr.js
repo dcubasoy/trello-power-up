@@ -15,11 +15,15 @@ var couldBeDrop = function(url) {
 	return test_might_be_drop.test(url) || test_might_be_drop_with_password.test(url);
 }
 
-var formatDropUrl = function(t, url){
-  if(!test_drop_regex.test(url)){
+var formatDropUrl = function(t, shortLink, url){
+  if(url == undefined) {
+	  url = shortLink;
+  }
+  
+  if(!test_drop_regex.test(shortLink)){
     return null;
   }
-  capture_results = capture_drop_regex.exec(url);
+  capture_results = capture_drop_regex.exec(shortLink);
   if(capture_results != null) {
 	  var dropParameters = {
 		"url": url,
@@ -52,7 +56,7 @@ var formatDropUrl = function(t, url){
 
 	return dropParameters;
   } else {
-	  console.log("This url passed the test but failed to capture: " + url);
+	  console.log("This url passed the test but failed to capture: " + shortLink);
 	  return null;
   }
 
