@@ -44,7 +44,7 @@ TrelloPowerUp.initialize({
 				} else {
 					isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
 					if(isBasicDrop) {
-						updateClaims(attachment.url);
+						updateClaims(attachment.url, attachment.url);
 						return true;
 					} else if(couldBeDrop(attachment.url)) {
 						needsMoreAnalysis.push(getEmbedInfo(attachment.url));
@@ -62,7 +62,7 @@ TrelloPowerUp.initialize({
 				} else {
 					isBasicDrop = test_drop_regex.test(attachment.url);
 					if(isBasicDrop) {
-						updateClaims(attachment.url);
+						updateClaims(attachment.url, attachment.url);
 						return true;
 					} else if(couldBeDrop(attachment.url)) {
 						needsMoreAnalysis.push(getEmbedInfo(attachment.url));
@@ -88,7 +88,7 @@ TrelloPowerUp.initialize({
 			if(embedInfo.hasOwnProperty("code")) {
 				claimed.push(unknownAttachments[i]);
 				console.log(unknownAttachments[i].url + " appears to be an active drop");
-				updateClaims(unknownAttachments[i].url);
+				updateClaims(unknownAttachments[i].url, embedInfo.shortLink);
 			} else {
 				console.log(unknownAttachments[i].url + " is NOT a drop");
 			}
