@@ -10,6 +10,29 @@ var test_drop_cover_image_regex2 = /^\w{3,8}\.png$/
 var capture_drop_regex = /^(http|https):\/\/d\.pr\/([ivf])\/(\w{3,8})\/?(\w*)\/?/
 var capture_drop_cover_image_regex = /^Cover image for drop (\w*)/
 var capture_drop_cover_image_regex2 = /^(\w{3,8})\.png$/
+var uniqueClaims = {};
+
+var loadClaims = function(data) {
+	uniqueClaims = data;
+}
+
+var updateClaims = function(url, shortLink) {
+	if(!uniqueClaims[url]) {
+		uniqueClaims[url] = { "shortLink": shortLink }
+	}
+};
+
+var isClaimed = function(url) {
+	return uniqueClaims.hasOwnProperty(url);
+};
+
+var getClaim = function(url) {
+	return uniqueClaims[url];
+}
+
+var getAllClaims = function() {
+	return uniqueClaims;
+}
 
 var couldBeDrop = function(url) {
 	return test_might_be_drop.test(url) || test_might_be_drop_with_password.test(url);

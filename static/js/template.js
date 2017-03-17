@@ -2,25 +2,10 @@
 var DROPLR_ICON = './images/logo.png';
 var DROPLR_GRAY_ICON = './images/icn.svg';
 var DROPLR_WHITE_ICON = './images/icn-white.svg';
-var uniqueClaims = {};
 // [1] = Protocol
 // [2] = Drop Type
 // [3] = Drop Code
 // [4] = Drop Access Code
-
-var updateClaims = function(url, shortLink) {
-	if(!uniqueClaims[url]) {
-		uniqueClaims[url] = { "claimed": true, "shortLink": shortLink }
-	}
-};
-
-var isClaimed = function(url) {
-	return uniqueClaims.hasOwnProperty(url);
-};
-
-var getClaim = function(url) {
-	return uniqueClaims[url];
-}
 
 var cardButtonCallback = function(t){
   return t.popup({
@@ -47,9 +32,11 @@ TrelloPowerUp.initialize({
 	var claimed = [];
 	console.log("-- attachment-sections function called on template.js --");
 	return TrelloPowerUp.Promise.all([
-		t.get('board', 'private', 'hideCoverAttachments', "hide")
+		t.get('board', 'private', 'hideCoverAttachments', "hide"),
+		t.get('card', 'private', 'uniqueClaims', {});
 	])
 	.then(function(settings){
+		loadClaims(settings[1])
 		if(settings[0] == "hide") {
 			claimed = options.entries.filter(function(attachment){
 				if(isClaimed(attachment.url)) {
@@ -106,6 +93,7 @@ TrelloPowerUp.initialize({
 				console.log(unknownAttachments[i].url + " is NOT a drop");
 			}
 		}
+		t.set('card', 'private', 'uniqueClaims', getAllClaims());
 	})
 	.then(function() {
 		if(claimed && claimed.length > 0){
