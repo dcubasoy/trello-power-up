@@ -30,7 +30,6 @@ TrelloPowerUp.initialize({
 	var needsMoreAnalysis = []
 	var unknownAttachments = []
 	var claimed = [];
-	//console.log("-- attachment-sections function called on template.js --");
 	return TrelloPowerUp.Promise.all([
 		t.get('board', 'private', 'hideCoverAttachments', "hide")
 	])
@@ -39,7 +38,6 @@ TrelloPowerUp.initialize({
 			claimed = options.entries.filter(function(attachment){
 				isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
 				if(isBasicDrop) {
-					updateClaims(attachment.url, attachment.url);
 					return true;
 				} else if(couldBeDrop(attachment.url)) {
 					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
@@ -53,7 +51,6 @@ TrelloPowerUp.initialize({
 			claimed = options.entries.filter(function(attachment){
 				isBasicDrop = test_drop_regex.test(attachment.url);
 				if(isBasicDrop) {
-					updateClaims(attachment.url, attachment.url);
 					return true;
 				} else if(couldBeDrop(attachment.url)) {
 					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
@@ -68,8 +65,6 @@ TrelloPowerUp.initialize({
 		return TrelloPowerUp.Promise.all(needsMoreAnalysis);
 	})
 	.then(function(results) {
-		//console.log("Results length: " + results.length);
-		//console.log("Raw results:\n" + JSON.stringify(results, null, 4));
 		for(var i = 0; i < results.length; i++) {
 			console.log("Loop iteration:" + i);
 			embedInfo = JSON.parse(results[i]);
@@ -77,13 +72,8 @@ TrelloPowerUp.initialize({
 			
 			if(embedInfo.hasOwnProperty("shortLink")) {
 				claimed.push(unknownAttachments[i]);
-				//console.log(unknownAttachments[i].url + " appears to be an active drop");
-				//updateClaims(unknownAttachments[i].url, embedInfo.shortLink);
-			} else {
-				//console.log(unknownAttachments[i].url + " is NOT a drop");
 			}
 		}
-		//t.set('card', 'private', 'uniqueClaims', getAllClaims());
 	})
 	.then(function() {
 		if(claimed && claimed.length > 0){
