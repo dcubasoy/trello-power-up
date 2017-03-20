@@ -227,7 +227,7 @@ var renderUsingTrelloAPI = function(token) {
 	for(i = 0; i < dropCount; i++ )
 	{
 		if(!dropInfoLookup.has(urls[i])) {
-			dropInfoLookup.set(urls[i], formatDropUrl(null, urls[i]);
+			dropInfoLookup.set(urls[i], formatDropUrl(null, urls[i]));
 		}
 		dropInfo = dropInfoLookup.get(urls[i]);
 		if(dropInfo != null) {
