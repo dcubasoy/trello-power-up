@@ -320,17 +320,21 @@ var renderUsingTrelloAPI = function(token) {
 			formatDropUrl(null, urls[i])
 			.then(function(result) {
 				dropInfoLookup.set(urls[i], result);
+				if(result != null) {
+					newRow = newEnhancedRow(urls[i], titles[i], res[2].id, res[2].cover);
+					if(newRow != null) {
+						allDropsDiv.appendChild(newRow);
+						newRow.setAttribute("style", "");
+					}
+				}
+			});
+		} else {
+			if(dropInfoLookup[urls[i]] != null) {
 				newRow = newEnhancedRow(urls[i], titles[i], res[2].id, res[2].cover);
 				if(newRow != null) {
 					allDropsDiv.appendChild(newRow);
 					newRow.setAttribute("style", "");
 				}
-			});
-		} else {
-			newRow = newEnhancedRow(urls[i], titles[i], res[2].id, res[2].cover);
-			if(newRow != null) {
-				allDropsDiv.appendChild(newRow);
-				newRow.setAttribute("style", "");
 			}
 		} 
 	}
@@ -361,17 +365,21 @@ var renderUsingPowerUpApi = function() {
 				formatDropUrl(null, urls[i])
 				.then(function(result) {
 					dropInfoLookup.set(urls[i], result);
+					if(result != null) {
+						newRow = newBasicRow(urls[i], titles[i]);
+						if(newRow != null) {
+							allDropsDiv.appendChild(newRow);
+							newRow.setAttribute("style", "");
+						}
+					}
+				});
+			} else {
+				if(dropInfoLookup[urls[i]] != null) {
 					newRow = newBasicRow(urls[i], titles[i]);
 					if(newRow != null) {
 						allDropsDiv.appendChild(newRow);
 						newRow.setAttribute("style", "");
 					}
-				});
-			} else {
-				newRow = newBasicRow(urls[i], titles[i]);
-				if(newRow != null) {
-					allDropsDiv.appendChild(newRow);
-					newRow.setAttribute("style", "");
 				}
 			}
 		}
