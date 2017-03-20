@@ -198,7 +198,7 @@ var renderUsingTrelloAPI = function(token) {
 	})
   .then(function(res) {
 	  return Promise.all([
-		res[0].filter(isDropLink),
+		res[0].filter(!isDropCoverImage),
 		res[0].filter(isDropCoverImage),
 		res[1]
 	  ]);
@@ -227,7 +227,7 @@ var renderUsingTrelloAPI = function(token) {
 	for(i = 0; i < dropCount; i++ )
 	{
 		if(!dropInfoLookup.has(urls[i])) {
-			dropInfoLookup.set(urls[i], formatDropUrl(null, getClaim(urls[i]).shortLink, urls[i]));
+			dropInfoLookup.set(urls[i], formatDropUrl(null, urls[i]);
 		}
 		dropInfo = dropInfoLookup.get(urls[i]);
 		if(dropInfo != null) {
@@ -284,7 +284,7 @@ var renderUsingPowerUpApi = function() {
 	return t.card('attachments')
 	.then(function(card) {
 	  return Promise.all([
-		card.attachments.filter(isDropLink),
+		card.attachments.filter(!isDropCoverImage),
 		card.attachments.filter(isDropCoverImage),
 		card
 	  ]);
@@ -298,7 +298,7 @@ var renderUsingPowerUpApi = function() {
 		for(i = 0; i < dropCount; i++ )
 		{
 			if(!dropInfoLookup.has(urls[i])) {
-				dropInfoLookup.set(urls[i], formatDropUrl(null, getClaim(urls[i]).shortLink, urls[i]));
+				dropInfoLookup.set(urls[i], formatDropUrl(null, urls[i]));
 			}
 			dropInfo = dropInfoLookup.get(urls[i]);
 			if(dropInfo != null) {
@@ -340,12 +340,9 @@ var renderUsingPowerUpApi = function() {
 var refreshDroplrSection = function(){
 	return Promise.all([
 			t.get('organization', 'private', 'token'),
-			t.get('board', 'private', 'token'),
-			t.get('card', 'private', 'uniqueClaims', {})
+			t.get('board', 'private', 'token')
 	])
 	.spread(function(orgToken, boardToken, claims){
-		console.log("Unique claims: " + JSON.stringify(claims, null, 4));
-		loadClaims(claims);
 		if(orgToken) {
 			return renderUsingTrelloAPI(orgToken);
 		} else if(boardToken) {

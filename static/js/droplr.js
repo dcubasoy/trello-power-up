@@ -10,14 +10,14 @@ var test_drop_cover_image_regex2 = /^\w{3,8}\.png$/
 var capture_drop_regex = /^(http|https):\/\/d\.pr\/([ivf])\/(\w{3,8})\/?(\w*)\/?/
 var capture_drop_cover_image_regex = /^Cover image for drop (\w*)/
 var capture_drop_cover_image_regex2 = /^(\w{3,8})\.png$/
-var uniqueClaims = {};
+/*var uniqueClaims = {};
 
 var loadClaims = function(data) {
 	uniqueClaims = data;
 }
 
 var updateClaims = function(url, shortLink) {
-	if(!uniqueClaims[url]) {
+	if(!uniqueClaims.hasOwnProperty(url)) {
 		uniqueClaims[url] = { "shortLink": shortLink }
 	}
 };
@@ -32,60 +32,67 @@ var getClaim = function(url) {
 
 var getAllClaims = function() {
 	return uniqueClaims;
-}
+}*/
 
 var couldBeDrop = function(url) {
 	return test_might_be_drop.test(url) || test_might_be_drop_with_password.test(url);
 }
 
-var formatDropUrl = function(t, shortLink, url){
-  console.log("formatDropUrl called");
-  console.log(" - shortLink: " + shortLink);
-  console.log(" - url: " + url);
-  if(url == undefined) {
-	  url = shortLink;
+var formatDropUrl = function(t, url){
+  
+  if(test_drop_regex.test(url)){
+	capture_results = capture_drop_regex.exec(url);
+	  if(capture_results != null) {
+		  var dropParameters = {
+			"url": url,
+			protocol: capture_results[1],
+			type: capture_results[2],
+			code: capture_results[3],
+			accessCode: capture_results[4],
+			thumbnail: '',
+			fullsize: ''
+		};
+
+		if(dropParameters.accessCode == 'small' ||
+			dropParameters.accessCode == 'medium' ||
+			dropParameters.accessCode == 'thumbnail')
+		{
+			dropParameters.accessCode = '';
+		}
+
+		if(dropParameters.accessCode.length > 0) {
+		  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/thumbnail';
+		} else {
+		  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/thumbnail';
+		}
+
+		if(dropParameters.accessCode.length > 0) {
+		  dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/medium';
+		} else {
+		  dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/medium';
+		}
+
+		return dropParameters;
+	  } else {
+		  console.log("This url passed the test but failed to capture: " + url);
+		  return null;
+	  }
+
+  } else {
+	  return getEmbedInfo(url)
+	  .then(function(embedInfo) {
+		  	if(embedInfo.hasOwnProperty("shortLink")) {
+				if(test_drop_regex.test(embedInfo.shortLink)){ 
+					return formatDropUrl(embedInfo.shortLink);
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+	  });
   }
   
-  if(!test_drop_regex.test(shortLink)){
-    return null;
-  }
-  capture_results = capture_drop_regex.exec(shortLink);
-  if(capture_results != null) {
-	  var dropParameters = {
-		"url": url,
-		protocol: capture_results[1],
-		type: capture_results[2],
-		code: capture_results[3],
-		accessCode: capture_results[4],
-		thumbnail: '',
-		fullsize: ''
-	};
-
-	if(dropParameters.accessCode == 'small' ||
-		dropParameters.accessCode == 'medium' ||
-		dropParameters.accessCode == 'thumbnail')
-	{
-		dropParameters.accessCode = '';
-	}
-
-	if(dropParameters.accessCode.length > 0) {
-	  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/thumbnail';
-	} else {
-	  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/thumbnail';
-	}
-
-	if(dropParameters.accessCode.length > 0) {
-	  dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/medium';
-	} else {
-	  dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/medium';
-	}
-
-	return dropParameters;
-  } else {
-	  console.log("This url passed the test but failed to capture: " + shortLink);
-	  return null;
-  }
-
 };
 
 var extractDropCodeFromCover = function(t, attachmentName) {

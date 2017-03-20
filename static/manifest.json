@@ -7,8 +7,7 @@
   },
   "author": "Charles Cozad",
   "capabilities": [
-    "attachment-sections",
-    "attachment-thumbnail",
+    "attachment-sections"
 	"board-buttons",
     "callback",
 	"card-buttons",

@@ -30,7 +30,7 @@ TrelloPowerUp.initialize({
 	var needsMoreAnalysis = []
 	var unknownAttachments = []
 	var claimed = [];
-	console.log("-- attachment-sections function called on template.js --");
+	//console.log("-- attachment-sections function called on template.js --");
 	return TrelloPowerUp.Promise.all([
 		t.get('board', 'private', 'hideCoverAttachments', "hide"),
 		t.get('card', 'private', 'uniqueClaims', {})
@@ -78,22 +78,22 @@ TrelloPowerUp.initialize({
 		return TrelloPowerUp.Promise.all(needsMoreAnalysis);
 	})
 	.then(function(results) {
-		console.log("Results length: " + results.length);
-		console.log("Raw results:\n" + JSON.stringify(results, null, 4));
+		//console.log("Results length: " + results.length);
+		//console.log("Raw results:\n" + JSON.stringify(results, null, 4));
 		for(var i = 0; i < results.length; i++) {
 			console.log("Loop iteration:" + i);
 			embedInfo = JSON.parse(results[i]);
 			console.log("Embed Info:\n" + JSON.stringify(embedInfo, null, 4))
 			
-			if(embedInfo.hasOwnProperty("code")) {
+			if(embedInfo.hasOwnProperty("shortLink")) {
 				claimed.push(unknownAttachments[i]);
-				console.log(unknownAttachments[i].url + " appears to be an active drop");
-				updateClaims(unknownAttachments[i].url, embedInfo.shortLink);
+				//console.log(unknownAttachments[i].url + " appears to be an active drop");
+				//updateClaims(unknownAttachments[i].url, embedInfo.shortLink);
 			} else {
-				console.log(unknownAttachments[i].url + " is NOT a drop");
+				//console.log(unknownAttachments[i].url + " is NOT a drop");
 			}
 		}
-		t.set('card', 'private', 'uniqueClaims', getAllClaims());
+		//t.set('card', 'private', 'uniqueClaims', getAllClaims());
 	})
 	.then(function() {
 		if(claimed && claimed.length > 0){
@@ -104,7 +104,7 @@ TrelloPowerUp.initialize({
 				title: 'Drops',
 				content: {
 					type: 'iframe',
-					url: t.signUrl('./section.html', { arg: 'you can pass your section args here' }),
+					url: t.signUrl('./section.html'),
 					height: 230
 				}
 			}];
@@ -112,24 +112,6 @@ TrelloPowerUp.initialize({
 			return [];
 		}
 	});
-  },
-  'attachment-thumbnail': function(t, options){
-	var dropInfo = formatDropUrl(t, options.url);
-    if(dropInfo){
-      // return an object with some or all of these properties:
-      // url, title, image, openText, modified (Date), created (Date), createdBy, modifiedBy
-      return {
-        url: options.url,
-        title: options.url,
-        image: {
-          url: dropInfo.thumbnail,
-          logo: false
-        },
-        openText: 'Open Drop'
-      };
-    } else {
-      throw t.NotHandled();
-    }
   },
   'board-buttons': function(t, options) {
     return [{
@@ -146,7 +128,7 @@ TrelloPowerUp.initialize({
     }];
   },
   'card-from-url': function(t, options) {
-	var dropInfo = formatDropUrl(t, options.url);
+	var dropInfo = formatDropUrl(t, options.url, options.url);
 	if(dropInfo){
 		return TrelloPowerUp.Promise.all([
 			t.get('board', 'private', 'linkBehavior', 'embed')
@@ -169,7 +151,7 @@ TrelloPowerUp.initialize({
     }
   },
   'format-url': function(t, options) {
-	var dropInfo = formatDropUrl(t, options.url);
+	var dropInfo = formatDropUrl(t, options.url, options.url);
     if(dropInfo){
 	  return {
         icon: DROPLR_ICON,
