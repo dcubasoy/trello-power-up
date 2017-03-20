@@ -188,7 +188,7 @@ var formatDate = function(date) {
 	return month + " " + day + " at " + hours + ":" + minutes + " " + ampm;
 }
 
-var newEnhancedRow = function(url, title, card, cover) {
+var newEnhancedRow = function(url, title, date, card, cover) {
 	dropInfo = dropInfoLookup.get(url);
 	if(dropInfo != null) {
 		dropCode = dropInfo.code
@@ -199,7 +199,7 @@ var newEnhancedRow = function(url, title, card, cover) {
 		titleElement = dropDiv.getElementsByClassName("drop-title")[0];
 		titleElement.innerHTML = title;
 		dateElement = dropDiv.getElementsByClassName("added-date")[0];
-		dateElement.innerHTML = "Added " + formatDate(dates[i]);
+		dateElement.innerHTML = "Added " + formatDate(date);
 		linkElement = dropDiv.getElementsByClassName("drop-link")[0];
 		linkElement.setAttribute("href", url);
 		coverLinkElement = dropDiv.getElementsByClassName("drop-cover")[0];
@@ -321,7 +321,7 @@ var renderUsingTrelloAPI = function(token) {
 			.then(function(result) {
 				dropInfoLookup.set(urls[i], result);
 				if(result != null) {
-					newRow = newEnhancedRow(urls[i], titles[i], res[2].id, res[2].cover);
+					newRow = newEnhancedRow(urls[i], titles[i], dates[i], res[2].id, res[2].cover);
 					if(newRow != null) {
 						allDropsDiv.appendChild(newRow);
 						newRow.setAttribute("style", "");
@@ -330,7 +330,7 @@ var renderUsingTrelloAPI = function(token) {
 			});
 		} else {
 			if(dropInfoLookup[urls[i]] != null) {
-				newRow = newEnhancedRow(urls[i], titles[i], res[2].id, res[2].cover);
+				newRow = newEnhancedRow(urls[i], titles[i], dates[i],  res[2].id, res[2].cover);
 				if(newRow != null) {
 					allDropsDiv.appendChild(newRow);
 					newRow.setAttribute("style", "");
