@@ -37,38 +37,30 @@ TrelloPowerUp.initialize({
 	.then(function(settings){
 		if(settings[0] == "hide") {
 			claimed = options.entries.filter(function(attachment){
-				if(isClaimed(attachment.url)) {
+				isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
+				if(isBasicDrop) {
+					updateClaims(attachment.url, attachment.url);
 					return true;
+				} else if(couldBeDrop(attachment.url)) {
+					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
+					unknownAttachments.push(attachment);
+					return false;
 				} else {
-					isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
-					if(isBasicDrop) {
-						updateClaims(attachment.url, attachment.url);
-						return true;
-					} else if(couldBeDrop(attachment.url)) {
-						needsMoreAnalysis.push(getEmbedInfo(attachment.url));
-						unknownAttachments.push(attachment);
-						return false;
-					} else {
-						return false;
-					}
+					return false;
 				}
 			});
 		} else {
 			claimed = options.entries.filter(function(attachment){
-				if(isClaimed (attachment.url)) {
+				isBasicDrop = test_drop_regex.test(attachment.url);
+				if(isBasicDrop) {
+					updateClaims(attachment.url, attachment.url);
 					return true;
+				} else if(couldBeDrop(attachment.url)) {
+					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
+					unknownAttachments.push(attachment);
+					return false;
 				} else {
-					isBasicDrop = test_drop_regex.test(attachment.url);
-					if(isBasicDrop) {
-						updateClaims(attachment.url, attachment.url);
-						return true;
-					} else if(couldBeDrop(attachment.url)) {
-						needsMoreAnalysis.push(getEmbedInfo(attachment.url));
-						unknownAttachments.push(attachment);
-						return false;
-					} else {
-						return false;
-					}
+					return false;
 				}
 			});
 		}
