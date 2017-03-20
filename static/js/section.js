@@ -72,6 +72,10 @@ var isDropCoverImage = function(attachment) {
 	return test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
 }
 
+var isNotDropCoverImage = function(attachment) {
+	return !(test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name));
+}
+
 // Sets the card cover to an image associated with a drop
 // card - ID for a Trello card entity
 // drop - Short code for a drop link
@@ -198,7 +202,7 @@ var renderUsingTrelloAPI = function(token) {
 	})
   .then(function(res) {
 	  return Promise.all([
-		res[0].filter(!isDropCoverImage),
+		res[0].filter(isNotDropCoverImage),
 		res[0].filter(isDropCoverImage),
 		res[1]
 	  ]);
@@ -284,7 +288,7 @@ var renderUsingPowerUpApi = function() {
 	return t.card('attachments')
 	.then(function(card) {
 	  return Promise.all([
-		card.attachments.filter(!isDropCoverImage),
+		card.attachments.filter(isNotDropCoverImage),
 		card.attachments.filter(isDropCoverImage),
 		card
 	  ]);
