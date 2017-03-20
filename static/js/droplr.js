@@ -72,10 +72,9 @@ var formatDropUrl = function(t, url){
 		  dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/medium';
 		}
 
-		return dropParameters;
+		return Promise.resolve(dropParameters);
 	  } else {
-		  console.log("This url passed the test but failed to capture: " + url);
-		  return null;
+		  return Promise.resolve(null);
 	  }
 
   } else {
@@ -85,10 +84,10 @@ var formatDropUrl = function(t, url){
 				if(test_drop_regex.test(embedInfo.shortLink)){ 
 					return formatDropUrl(embedInfo.shortLink);
 				} else {
-					return null;
+					return Promise.resolve(null);
 				}
 			} else {
-				return null;
+				return Promise.resolve(null);
 			}
 	  });
   }

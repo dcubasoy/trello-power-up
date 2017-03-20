@@ -108,31 +108,34 @@ TrelloPowerUp.initialize({
     }];
   },
   'card-from-url': function(t, options) {
-	var dropInfo = formatDropUrl(t, options.url, options.url);
-	if(dropInfo){
-		return TrelloPowerUp.Promise.all([
-			t.get('board', 'private', 'linkBehavior', 'embed')
-		])
-		.spread(function(savedLinkBehavior){
-			if(savedLinkBehavior === "embed") {
-				return {
-					name: options.url,
-					desc: '![' + options.url + '](' + dropInfo.fullsize + ')'
-				};
-			} else {
-				return {
-					name: options.url,
-					desc: options.url
-				};
-			}
-		});
-    } else {
-		throw t.NotHandled();
-    }
+	formatDropUrl(t, options.url)
+	.then(function(dropInfo) {
+		if(dropInfo){
+			return TrelloPowerUp.Promise.all([
+				t.get('board', 'private', 'linkBehavior', 'embed')
+			])
+			.spread(function(savedLinkBehavior){
+				if(savedLinkBehavior === "embed") {
+					return {
+						name: options.url,
+						desc: '![' + options.url + '](' + dropInfo.fullsize + ')'
+					};
+				} else {
+					return {
+						name: options.url,
+						desc: options.url
+					};
+				}
+			});
+		} else {
+			throw t.NotHandled();
+		}
+	}
   },
   'format-url': function(t, options) {
-	var dropInfo = formatDropUrl(t, options.url, options.url);
-    if(dropInfo){
+	//var dropInfo = formatDropUrl(t, options.url, options.url
+	var isBasicDrop = test_drop_regex.test(options.url);
+    if(isBasicDrop){
 	  return {
         icon: DROPLR_ICON,
         text: options.url

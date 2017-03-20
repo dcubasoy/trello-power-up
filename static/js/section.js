@@ -188,6 +188,91 @@ var formatDate = function(date) {
 	return month + " " + day + " at " + hours + ":" + minutes + " " + ampm;
 }
 
+var newEnhancedRow = function(url, title, card, cover) {
+	dropInfo = dropInfoLookup.get(url);
+	if(dropInfo != null) {
+		dropCode = dropInfo.code
+		dropDiv = detailRowTemplate.cloneNode(true);
+		dropDiv.setAttribute("id", "drop" + dropCode);
+		imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
+		imageElement.setAttribute("src", dropInfo.thumbnail);
+		titleElement = dropDiv.getElementsByClassName("drop-title")[0];
+		titleElement.innerHTML = title;
+		dateElement = dropDiv.getElementsByClassName("added-date")[0];
+		dateElement.innerHTML = "Added " + formatDate(dates[i]);
+		linkElement = dropDiv.getElementsByClassName("drop-link")[0];
+		linkElement.setAttribute("href", url);
+		coverLinkElement = dropDiv.getElementsByClassName("drop-cover")[0];
+		if(dropInfo.type == 'i') {
+			coverLinkElement.setAttribute("data-droplr-card", card);
+			coverLinkElement.setAttribute("data-droplr-drop", url);
+			coverLinkElement.setAttribute("style", "");
+			dropDiv.getElementsByClassName("fa-window-maximize")[0].setAttribute("style", "margin-left: 10px;");
+			if(cover == null) {
+				// The card does not currently have a cover
+				makeCardCoverEventListener(coverLinkElement);
+			} else if(!dropCoverLookup.has(dropCode)) {
+				// There is no cover associated with this drop so it can't be the cover
+				makeCardCoverEventListener(coverLinkElement);
+			} else if(cover.id != dropCoverLookup.get(dropCode).id) {
+				// The card has a cover and the drop has a cover but they don't match
+				makeCardCoverEventListener(coverLinkElement);
+			} else {
+				// The card's cover is this drop's cover
+				coverLinkElement.innerHTML = 'Remove Cover';
+				removeCardCoverEventListener(coverLinkElement);
+			}
+		} else {
+			// Drops that aren't images don't have a cover option
+		}
+
+		copyLinkElement = dropDiv.getElementsByClassName("copy-drop-link")[0];
+		copyLinkElement.setAttribute("value", url);
+		copyLinkElement.setAttribute("id", "textbox-" + dropCode);
+		copyLinkButtonElement = dropDiv.getElementsByClassName("copy-drop-link-button")[0];
+		copyLinkButtonElement.setAttribute("data-clipboard-target", "#" + "textbox-" + dropCode);
+		return dropDiv;
+	} else {
+		return null;
+	}
+}
+
+var newBasicRow = function(url, title) {
+	dropInfo = dropInfoLookup.get(url);
+	if(dropInfo != null) {
+		dropCode = dropInfo.code
+		dropDiv = detailRowTemplate.cloneNode(true);
+		dropDiv.setAttribute("id", dropCode);
+		imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
+		imageElement.setAttribute("src", dropInfo.thumbnail);
+		titleElement = dropDiv.getElementsByClassName("drop-title")[0];
+		titleElement.innerHTML = title;
+		dateElement = dropDiv.getElementsByClassName("added-date")[0];
+		dateElement.setAttribute("style", "display: none;");
+		linkElement = dropDiv.getElementsByClassName("drop-link")[0];
+		linkElement.setAttribute("href", url);
+		coverLinkElement = dropDiv.getElementsByClassName("drop-cover")[0];
+		if(dropInfo.type == 'i') {
+			coverLinkElement.setAttribute("style", "");
+			dropDiv.getElementsByClassName("fa-window-maximize")[0].setAttribute("style", "margin-left: 10px;");
+			authorizeCardCoverEventListener(coverLinkElement);
+		} else {
+			// Drops that aren't images don't have a cover option
+		}
+		copyLinkElement = dropDiv.getElementsByClassName("copy-drop-link")[0];
+		copyLinkElement.setAttribute("value", url);
+		copyLinkElement.setAttribute("id", "textbox-" + dropCode);
+		copyLinkButtonElement = dropDiv.getElementsByClassName("copy-drop-link-button")[0];
+		copyLinkButtonElement.setAttribute("data-clipboard-target", "#" + "textbox-" + dropCode);
+
+		allDropsDiv.appendChild(dropDiv);
+		dropDiv.setAttribute("style", "");
+		return dropDiv;
+	} else {
+		return null;
+	}
+}
+
 // This method is responsible for keeping drop info caches
 // and cover image caches up to date. It is also responsible for displaying
 // generating HTML to display the appropriate state of all drops.
@@ -226,62 +311,33 @@ var renderUsingTrelloAPI = function(token) {
 		}
 	}
 
+	var newRow;
 	dropCount = urls.length;
 	allDropsDiv.innerHTML = '';
 	for(i = 0; i < dropCount; i++ )
 	{
 		if(!dropInfoLookup.has(urls[i])) {
-			dropInfoLookup.set(urls[i], formatDropUrl(null, urls[i]));
-		}
-		dropInfo = dropInfoLookup.get(urls[i]);
-		if(dropInfo != null) {
-			dropCode = dropInfo.code
-			dropDiv = detailRowTemplate.cloneNode(true);
-			dropDiv.setAttribute("id", "drop" + dropCode);
-			imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
-			imageElement.setAttribute("src", dropInfo.thumbnail);
-			titleElement = dropDiv.getElementsByClassName("drop-title")[0];
-			titleElement.innerHTML = titles[i];
-			dateElement = dropDiv.getElementsByClassName("added-date")[0];
-			dateElement.innerHTML = "Added " + formatDate(dates[i]);
-			linkElement = dropDiv.getElementsByClassName("drop-link")[0];
-			linkElement.setAttribute("href", urls[i]);
-			coverLinkElement = dropDiv.getElementsByClassName("drop-cover")[0];
-			if(dropInfo.type == 'i') {
-				coverLinkElement.setAttribute("data-droplr-card", res[2].id);
-				coverLinkElement.setAttribute("data-droplr-drop", urls[i])
-				coverLinkElement.setAttribute("style", "");
-				dropDiv.getElementsByClassName("fa-window-maximize")[0].setAttribute("style", "margin-left: 10px;");
-				if(res[2].cover == null) {
-					// The card does not currently have a cover
-					makeCardCoverEventListener(coverLinkElement);
-				} else if(!dropCoverLookup.has(dropCode)) {
-					// There is no cover associated with this drop so it can't be the cover
-					makeCardCoverEventListener(coverLinkElement);
-				} else if(res[2].cover.id != dropCoverLookup.get(dropCode).id) {
-					// The card has a cover and the drop has a cover but they don't match
-					makeCardCoverEventListener(coverLinkElement);
-				} else {
-					// The card's cover is this drop's cover
-					coverLinkElement.innerHTML = 'Remove Cover';
-					removeCardCoverEventListener(coverLinkElement);
+			formatDropUrl(null, urls[i])
+			.then(function(result) {
+				dropInfoLookup.set(urls[i], result);
+				newRow = newEnhancedRow(urls[i], titles[i], res[2].id, res[2].cover);
+				if(newRow != null) {
+					allDropsDiv.appendChild(newRow);
+					newRow.setAttribute("style", "");
 				}
-			} else {
-				// Drops that aren't images don't have a cover option
+			});
+		} else {
+			newRow = newEnhancedRow(urls[i], titles[i], res[2].id, res[2].cover);
+			if(newRow != null) {
+				allDropsDiv.appendChild(newRow);
+				newRow.setAttribute("style", "");
 			}
-
-			copyLinkElement = dropDiv.getElementsByClassName("copy-drop-link")[0];
-			copyLinkElement.setAttribute("value", urls[i]);
-			copyLinkElement.setAttribute("id", "textbox-" + dropCode);
-			copyLinkButtonElement = dropDiv.getElementsByClassName("copy-drop-link-button")[0];
-			copyLinkButtonElement.setAttribute("data-clipboard-target", "#" + "textbox-" + dropCode);
-
-			allDropsDiv.appendChild(dropDiv);
-			dropDiv.setAttribute("style", "");
-		}
+		} 
 	}
-	t.sizeTo('#content');
   })
+  .then(function() {
+	  t.sizeTo('#content');
+  });
 };
 
 var renderUsingPowerUpApi = function() {
@@ -302,41 +358,27 @@ var renderUsingPowerUpApi = function() {
 		for(i = 0; i < dropCount; i++ )
 		{
 			if(!dropInfoLookup.has(urls[i])) {
-				dropInfoLookup.set(urls[i], formatDropUrl(null, urls[i]));
-			}
-			dropInfo = dropInfoLookup.get(urls[i]);
-			if(dropInfo != null) {
-				dropCode = dropInfo.code
-				dropDiv = detailRowTemplate.cloneNode(true);
-				dropDiv.setAttribute("id", dropCode);
-				imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
-				imageElement.setAttribute("src", dropInfo.thumbnail);
-				titleElement = dropDiv.getElementsByClassName("drop-title")[0];
-				titleElement.innerHTML = titles[i];
-				dateElement = dropDiv.getElementsByClassName("added-date")[0];
-				dateElement.setAttribute("style", "display: none;");
-				linkElement = dropDiv.getElementsByClassName("drop-link")[0];
-				linkElement.setAttribute("href", urls[i]);
-				coverLinkElement = dropDiv.getElementsByClassName("drop-cover")[0];
-				if(dropInfo.type == 'i') {
-					coverLinkElement.setAttribute("style", "");
-					dropDiv.getElementsByClassName("fa-window-maximize")[0].setAttribute("style", "margin-left: 10px;");
-					authorizeCardCoverEventListener(coverLinkElement);
-				} else {
-					// Drops that aren't images don't have a cover option
+				formatDropUrl(null, urls[i])
+				.then(function(result) {
+					dropInfoLookup.set(urls[i], result);
+					newRow = newBasicRow(urls[i], titles[i]);
+					if(newRow != null) {
+						allDropsDiv.appendChild(newRow);
+						newRow.setAttribute("style", "");
+					}
+				});
+			} else {
+				newRow = newBasicRow(urls[i], titles[i]););
+				if(newRow != null) {
+					allDropsDiv.appendChild(newRow);
+					newRow.setAttribute("style", "");
 				}
-				copyLinkElement = dropDiv.getElementsByClassName("copy-drop-link")[0];
-				copyLinkElement.setAttribute("value", urls[i]);
-				copyLinkElement.setAttribute("id", "textbox-" + dropCode);
-				copyLinkButtonElement = dropDiv.getElementsByClassName("copy-drop-link-button")[0];
-				copyLinkButtonElement.setAttribute("data-clipboard-target", "#" + "textbox-" + dropCode);
-
-				allDropsDiv.appendChild(dropDiv);
-				dropDiv.setAttribute("style", "");
 			}
 		}
-		t.sizeTo('#content');
 	})
+	.then(function() {
+		t.sizeTo('#content');
+	});
 };
 
 // This method gets called each time a user adds or removes attachments to our
