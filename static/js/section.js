@@ -368,7 +368,7 @@ var renderUsingPowerUpApi = function() {
 					}
 				});
 			} else {
-				newRow = newBasicRow(urls[i], titles[i]););
+				newRow = newBasicRow(urls[i], titles[i]);
 				if(newRow != null) {
 					allDropsDiv.appendChild(newRow);
 					newRow.setAttribute("style", "");
