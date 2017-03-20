@@ -130,7 +130,7 @@ TrelloPowerUp.initialize({
 		} else {
 			throw t.NotHandled();
 		}
-	}
+	})
   },
   'format-url': function(t, options) {
 	//var dropInfo = formatDropUrl(t, options.url, options.url
