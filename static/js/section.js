@@ -73,7 +73,8 @@ var isDropCoverImage = function(attachment) {
 }
 
 var isDropCandidate = function(attachment) {
-	return couldBeDrop(attachment.url);
+	//return couldBeDrop(attachment.url);
+	return true;
 }
 
 // Sets the card cover to an image associated with a drop
