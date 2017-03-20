@@ -32,11 +32,9 @@ TrelloPowerUp.initialize({
 	var claimed = [];
 	//console.log("-- attachment-sections function called on template.js --");
 	return TrelloPowerUp.Promise.all([
-		t.get('board', 'private', 'hideCoverAttachments', "hide"),
-		t.get('card', 'private', 'uniqueClaims', {})
+		t.get('board', 'private', 'hideCoverAttachments', "hide")
 	])
 	.then(function(settings){
-		loadClaims(settings[1])
 		if(settings[0] == "hide") {
 			claimed = options.entries.filter(function(attachment){
 				if(isClaimed(attachment.url)) {
