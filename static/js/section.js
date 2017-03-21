@@ -411,7 +411,6 @@ var renderUsingTrelloAPI = function(token) {
 				newRow.setAttribute("style", "");
 			}
 		}
-	}
   })
   .then(function() {
 	  t.sizeTo('#content');
