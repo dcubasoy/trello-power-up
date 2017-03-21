@@ -350,7 +350,7 @@ var renderUsingTrelloAPI = function(token) {
 		titles,
 		dates,
 		res[2].id,
-		res[2].cover
+		res[2].cover,
 		dropsThatNeedMoreInfo,
 		needsMoreAnalysis);
   })
