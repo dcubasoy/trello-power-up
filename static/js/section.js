@@ -62,12 +62,14 @@ var isDropLink = function(attachment) {
 var isDropCoverImage = function(attachment) {
 	console.log("isCoverImage called");
 	console.log(" - Attachment: " + JSON.stringify(attachment, null, 4));
+	console.log(" - Return value: " + (test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name)));
 	return test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
 }
 
 var isDropCandidate = function(attachment) {
 	console.log("isDropCandidate called");
 	console.log(" - Attachment: " + JSON.stringify(attachment, null, 4));
+	console.log(" - Return value: " + couldBeDrop(attachment.url));
 	return couldBeDrop(attachment.url);
 	//return true;
 }
@@ -170,18 +172,23 @@ var removeCardCoverEventListener = function (domElement) {
 }
 
 var formatDate = function(date) {
-	var day = date.getDate();
-	var hours = date.getHours();
-	var minutes = date.getMinutes();
-	if(minutes < 10) {
-		minutes = "0" + minutes;
+	if(date != undefined) {
+		var day = date.getDate();
+		var hours = date.getHours();
+		var minutes = date.getMinutes();
+		if(minutes < 10) {
+			minutes = "0" + minutes;
+		}
+		var ampm = hours < 12 ? "AM" : "PM";
+		if(hours > 12) {
+			hours = hours - 12;
+		}
+		var month = months[date.getMonth()];
+		return month + " " + day + " at " + hours + ":" + minutes + " " + ampm;
+	} else {
+		return "";
 	}
-	var ampm = hours < 12 ? "AM" : "PM";
-	if(hours > 12) {
-		hours = hours - 12;
-	}
-	var month = months[date.getMonth()];
-	return month + " " + day + " at " + hours + ":" + minutes + " " + ampm;
+	
 }
 
 var newEnhancedRow = function(url, title, date, card, cover) {
@@ -245,9 +252,6 @@ var newBasicRow = function(url, title) {
 	console.log("newBasicRow called");
 	console.log(" - URL: " + url);
 	console.log(" - Title: " + title);
-	console.log(" - Date: " + date);
-	console.log(" - Card: " + card);
-	console.log(" - Cover: " + JSON.stringify(cover, null, 4));
 	var dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
 	var coverLinkElement, copyLinkButtonElement, dropCode, dropInfo;
 	dropInfo = dropInfoLookup.get(url);
@@ -335,6 +339,12 @@ var renderUsingTrelloAPI = function(token) {
 	allDropsDiv.innerHTML = '';
 	for(i = 0; i < dropCount; i++ )
 	{
+		console.log("Value of parameters before enhanced row calls");
+		console.log(" - URL: " + urls[i]);
+		console.log(" - Title: " + titles[i]);
+		console.log(" - Date: " + dates[i]);
+		console.log(" - Card: " + res[2].id);
+		console.log(" - Cover: " + JSON.stringify(res[2].cover, null, 4));
 		if(!dropInfoLookup.has(urls[i])) {
 			formatDropUrl(null, urls[i])
 			.then(function(result) {
@@ -385,6 +395,9 @@ var renderUsingPowerUpApi = function() {
 		allDropsDiv.innerHTML = '';
 		for(i = 0; i < dropCount; i++ )
 		{
+			console.log("Value of parameters before basic row calls");
+			console.log(" - URL: " + urls[i]);
+			console.log(" - Title: " + titles[i]);
 			if(!dropInfoLookup.has(urls[i])) {
 				formatDropUrl(null, urls[i])
 				.then(function(result) {
