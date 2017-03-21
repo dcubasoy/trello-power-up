@@ -297,6 +297,8 @@ var renderUsingTrelloAPI = function(token) {
 	var urls = [];
 	var dates = [];
 	var titles = [];
+	var needsMoreAnalysis = [];
+	var dropsThatNeedMoreInfo = [];
 	var i, dropCode;
 	var dropCount = 0;
 	Trello.setToken(token);
@@ -332,40 +334,44 @@ var renderUsingTrelloAPI = function(token) {
 			dropCoverLookup.set(dropCode, res[1][i]);
 		}
 	}
-
+	
+	dropsThatNeedMoreInfo = urls.filter(function(url) {
+		if(dropInfoLookup.has(url)) {
+			return false;
+		} else {
+			needsMoreAnalysis.push(formatDropUrl(null, url));
+		}
+	});
+	
+	console.log("Here are drops that need to be looked up:\n" + JSON.stringify(dropsThatNeedMoreInfo, null, 4));
+	
+	return Promise.all(
+		urls,
+		titles,
+		dates,
+		res[2].id,
+		res[2].cover
+		dropsThatNeedMoreInfo,
+		needsMoreAnalysis);
+  })
+  .then(function(results) {
+	console.log("Here is what was calculated in the last step:\n" + JSON.stringify(results, null, 4));
+	
+	for(var index = 0; index < results[5].length; index++) {
+		dropInfoLookup.set(results[5][i], results[6][i]);
+	}
+	
 	var newRow;
 	
-	dropCount = urls.length;
+	dropCount = results[0].length;
 	allDropsDiv.innerHTML = '';
 	for(i = 0; i < dropCount; i++ )
 	{
-		console.log("Value of parameters before enhanced row calls");
-		console.log(" - URL: " + urls[i]);
-		console.log(" - Title: " + titles[i]);
-		console.log(" - Date: " + dates[i]);
-		console.log(" - Card: " + res[2].id);
-		console.log(" - Cover: " + JSON.stringify(res[2].cover, null, 4));
-		if(!dropInfoLookup.has(urls[i])) {
-			formatDropUrl(null, urls[i])
-			.then(function(result) {
-				dropInfoLookup.set(urls[i], result);
-				if(result != null) {
-					newRow = newEnhancedRow(urls[i], titles[i], dates[i], res[2].id, res[2].cover);
-					if(newRow != null) {
-						allDropsDiv.appendChild(newRow);
-						newRow.setAttribute("style", "");
-					}
-				}
-			});
-		} else {
-			if(dropInfoLookup[urls[i]] != null) {
-				newRow = newEnhancedRow(urls[i], titles[i], dates[i],  res[2].id, res[2].cover);
-				if(newRow != null) {
-					allDropsDiv.appendChild(newRow);
-					newRow.setAttribute("style", "");
-				}
-			}
-		} 
+		newRow = newEnhancedRow(results[0][i], results[1][i], results[2][i], results[3], results[4]);
+		if(newRow != null) {
+			allDropsDiv.appendChild(newRow);
+			newRow.setAttribute("style", "");
+		}
 	}
   })
   .then(function() {
