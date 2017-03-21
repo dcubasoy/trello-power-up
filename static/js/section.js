@@ -6,16 +6,7 @@ var t = TrelloPowerUp.iframe();
 var trelloApiKey = "d4555b9abf43f890715d5a12c07dea09";
 var authReturnUrl = "https://power-up.droplr.com/confirm-auth.html"
 
-// you can access arguments passed to your iframe like so
-var arg = t.arg('arg');
-
 var Promise = TrelloPowerUp.Promise;
-var urls = [];
-var dates = [];
-var titles = [];
-var dropCount = 0;
-var i, dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
-var coverLinkElement, copyLinkButtonElement, dropCode, dropInfo;
 var dropInfoLookup = new Map();
 var dropCoverLookup = new Map();
 
@@ -69,12 +60,16 @@ var isDropLink = function(attachment) {
 }
 
 var isDropCoverImage = function(attachment) {
+	console.log("isCoverImage called");
+	console.log(" - Attachment: " + JSON.stringify(attachment, null, 4));
 	return test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
 }
 
 var isDropCandidate = function(attachment) {
-	//return couldBeDrop(attachment.url);
-	return true;
+	console.log("isDropCandidate called");
+	console.log(" - Attachment: " + JSON.stringify(attachment, null, 4));
+	return couldBeDrop(attachment.url);
+	//return true;
 }
 
 // Sets the card cover to an image associated with a drop
@@ -105,7 +100,7 @@ var setCardCover = function (card, drop) {
 		});
 	} else {
 		return new Promise.all([
-			Trello.post('/cards/' + card + '/attachments', {url: dropInfo.fullsize, name: 'Cover image for drop ' + dropInfo.code})
+			Trello.post('/cards/' + card + '/attachments', {"url": dropInfo.fullsize, name: 'Cover image for drop ' + dropInfo.code})
 		])
 		.then(function(results) {
 			dropCoverLookup.set(dropInfo.code, results[0]);
@@ -139,9 +134,9 @@ var authorizeCardCoverEventListener = function (domElement) {
 		errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
 		t.sizeTo('#content');
 		t.popup({
-			title: 'Get More Droplr Features',
-			url: 'authorize.html',
-			height: 140,
+			"title": 'Get More Droplr Features',
+			"url": 'authorize.html',
+			"height": 140,
 		});
 	});
 
@@ -190,6 +185,14 @@ var formatDate = function(date) {
 }
 
 var newEnhancedRow = function(url, title, date, card, cover) {
+	console.log("newEnhancedRow called");
+	console.log(" - URL: " + url);
+	console.log(" - Title: " + title);
+	console.log(" - Date: " + date);
+	console.log(" - Card: " + card);
+	console.log(" - Cover: " + JSON.stringify(cover, null, 4));
+	var dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
+	var coverLinkElement, copyLinkButtonElement, dropCode, dropInfo;
 	dropInfo = dropInfoLookup.get(url);
 	if(dropInfo != null) {
 		dropCode = dropInfo.code
@@ -239,6 +242,14 @@ var newEnhancedRow = function(url, title, date, card, cover) {
 }
 
 var newBasicRow = function(url, title) {
+	console.log("newBasicRow called");
+	console.log(" - URL: " + url);
+	console.log(" - Title: " + title);
+	console.log(" - Date: " + date);
+	console.log(" - Card: " + card);
+	console.log(" - Cover: " + JSON.stringify(cover, null, 4));
+	var dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
+	var coverLinkElement, copyLinkButtonElement, dropCode, dropInfo;
 	dropInfo = dropInfoLookup.get(url);
 	if(dropInfo != null) {
 		dropCode = dropInfo.code
@@ -278,6 +289,12 @@ var newBasicRow = function(url, title) {
 // and cover image caches up to date. It is also responsible for displaying
 // generating HTML to display the appropriate state of all drops.
 var renderUsingTrelloAPI = function(token) {
+	console.log("renderUsingTrelloAPI called");
+	var urls = [];
+	var dates = [];
+	var titles = [];
+	var i, dropCode;
+	var dropCount = 0;
 	Trello.setToken(token);
 	return t.card('id', 'cover')
 	.then(function(card) {
@@ -313,6 +330,7 @@ var renderUsingTrelloAPI = function(token) {
 	}
 
 	var newRow;
+	
 	dropCount = urls.length;
 	allDropsDiv.innerHTML = '';
 	for(i = 0; i < dropCount; i++ )
@@ -346,6 +364,11 @@ var renderUsingTrelloAPI = function(token) {
 };
 
 var renderUsingPowerUpApi = function() {
+	console.log("renderUsingPowerUpAPI called");
+	var urls = [];
+	var titles = [];
+	var i;
+	var dropCount = 0;
 	return t.card('attachments')
 	.then(function(card) {
 	  return Promise.all([
@@ -393,6 +416,7 @@ var renderUsingPowerUpApi = function() {
 // This method gets called each time a user adds or removes attachments to our
 // attachment section.
 var refreshDroplrSection = function(){
+	console.log("refreshDroplrSection called");
 	return Promise.all([
 			t.get('organization', 'private', 'token'),
 			t.get('board', 'private', 'token')
