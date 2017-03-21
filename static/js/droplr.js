@@ -39,7 +39,8 @@ var couldBeDrop = function(url) {
 }
 
 var formatDropUrl = function(t, url){
-  
+  console.log("formatDropUrl called");
+  console.log(" - URL: " + url);
   if(test_drop_regex.test(url)){
 	capture_results = capture_drop_regex.exec(url);
 	  if(capture_results != null) {
@@ -80,6 +81,7 @@ var formatDropUrl = function(t, url){
   } else {
 	  return getEmbedInfo(url)
 	  .then(function(embedInfo) {
+			console.log("EmbedInfo" + JSON.stringify(embedInfo));
 		  	if(embedInfo.hasOwnProperty("shortLink")) {
 				if(test_drop_regex.test(embedInfo.shortLink)){ 
 					return formatDropUrl(embedInfo.shortLink);
