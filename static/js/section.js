@@ -346,31 +346,32 @@ var renderUsingTrelloAPI = function(token) {
 	console.log("Here are drops that need to be looked up:\n" + JSON.stringify(dropsThatNeedMoreInfo, null, 4));
 	
 	return Promise.all(
-		urls,
-		titles,
-		dates,
-		res[2].id,
-		res[2].cover,
-		dropsThatNeedMoreInfo,
+		Promise.resolve(urls),
+		Promise.resolve(titles),
+		Promise.resolve(dates),
+		Promise.resolve(res[2].id),
+		Promise.resolve(res[2].cover),
+		Promise.resolve(dropsThatNeedMoreInfo),
 		needsMoreAnalysis);
   })
   .then(function(results) {
 	console.log("Here is what was calculated in the last step:\n" + JSON.stringify(results, null, 4));
+	if(results.length == 7) {
+		for(var index = 0; index < results[5].length; index++) {
+			dropInfoLookup.set(results[5][i], results[6][i]);
+		}
 	
-	for(var index = 0; index < results[5].length; index++) {
-		dropInfoLookup.set(results[5][i], results[6][i]);
-	}
+		var newRow;
 	
-	var newRow;
-	
-	dropCount = results[0].length;
-	allDropsDiv.innerHTML = '';
-	for(i = 0; i < dropCount; i++ )
-	{
-		newRow = newEnhancedRow(results[0][i], results[1][i], results[2][i], results[3], results[4]);
-		if(newRow != null) {
-			allDropsDiv.appendChild(newRow);
-			newRow.setAttribute("style", "");
+		dropCount = results[0].length;
+		allDropsDiv.innerHTML = '';
+		for(i = 0; i < dropCount; i++ )
+		{
+			newRow = newEnhancedRow(results[0][i], results[1][i], results[2][i], results[3], results[4]);
+			if(newRow != null) {
+				allDropsDiv.appendChild(newRow);
+				newRow.setAttribute("style", "");
+			}
 		}
 	}
   })
