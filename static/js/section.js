@@ -294,12 +294,14 @@ var newBasicRow = function(url, title) {
 // generating HTML to display the appropriate state of all drops.
 var renderUsingTrelloAPI = function(token) {
 	console.log("renderUsingTrelloAPI called");
+	var dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
+	var coverLinkElement, copyLinkButtonElement, dropCode, dropInfo;
 	var urls = [];
 	var dates = [];
 	var titles = [];
 	var needsMoreAnalysis = [];
 	var dropsThatNeedMoreInfo = [];
-	var i, dropCode;
+	var i, card, cover;
 	var dropCount = 0;
 	Trello.setToken(token);
 	return t.card('id', 'cover')
@@ -345,35 +347,67 @@ var renderUsingTrelloAPI = function(token) {
 	});
 	
 	console.log("Here are drops that need to be looked up:\n" + JSON.stringify(dropsThatNeedMoreInfo, null, 4));
+	card = res[2].id;
+	cover = res[2].cover;
 	
-	return Promise.all(
-		Promise.resolve(urls.slice()),
-		Promise.resolve(titles.slice()),
-		Promise.resolve(dates.slice()),
-		Promise.resolve(res[2].id),
-		Promise.resolve(res[2].cover),
-		Promise.resolve(dropsThatNeedMoreInfo),
-		Promise.all(needsMoreAnalysis));
+	return Promise.all(needsMoreAnalysis);
   })
   .then(function(results) {
 	console.log("Here is what was calculated in the last step:\n" + JSON.stringify(results, null, 4));
 	console.log("Can I see urls from here?\n" + JSON.stringify(urls, null, 4));
 	console.log("Can I see titles from here?\n" + JSON.stringify(titles, null, 4));
 	console.log("Can I see dates from here?\n" + JSON.stringify(dates, null, 4));
-	if(results.length == 7) {
-		for(var index = 0; index < results[5].length; index++) {
-			dropInfoLookup.set(results[5][i], results[6][i]);
+		for(var index = 0; index < dropsThatNeedMoreInfo.length; index++) {
+			dropInfoLookup.set(dropsThatNeedMoreInfo[i], results[i]);
 		}
 	
-		var newRow;
-	
-		dropCount = results[0].length;
+		dropCount = urls.length;
 		allDropsDiv.innerHTML = '';
 		for(i = 0; i < dropCount; i++ )
 		{
-			newRow = newEnhancedRow(results[0][i], results[1][i], results[2][i], results[3], results[4]);
-			if(newRow != null) {
-				allDropsDiv.appendChild(newRow);
+			dropInfo = dropInfoLookup.get(urls[i]);
+			if(dropInfo != null) {
+				dropCode = dropInfo.code
+				dropDiv = detailRowTemplate.cloneNode(true);
+				dropDiv.setAttribute("id", "drop" + dropCode);
+				imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
+				imageElement.setAttribute("src", dropInfo.thumbnail);
+				titleElement = dropDiv.getElementsByClassName("drop-title")[0];
+				titleElement.innerHTML = titles[i];
+				dateElement = dropDiv.getElementsByClassName("added-date")[0];
+				dateElement.innerHTML = "Added " + formatDate(date);
+				linkElement = dropDiv.getElementsByClassName("drop-link")[0];
+				linkElement.setAttribute("href", urls[0]);
+				coverLinkElement = dropDiv.getElementsByClassName("drop-cover")[0];
+				if(dropInfo.type == 'i') {
+					coverLinkElement.setAttribute("data-droplr-card", card);
+					coverLinkElement.setAttribute("data-droplr-drop", urls[i]);
+					coverLinkElement.setAttribute("style", "");
+					dropDiv.getElementsByClassName("fa-window-maximize")[0].setAttribute("style", "margin-left: 10px;");
+					if(cover == null) {
+						// The card does not currently have a cover
+						makeCardCoverEventListener(coverLinkElement);
+					} else if(!dropCoverLookup.has(dropCode)) {
+						// There is no cover associated with this drop so it can't be the cover
+						makeCardCoverEventListener(coverLinkElement);
+					} else if(cover.id != dropCoverLookup.get(dropCode).id) {
+						// The card has a cover and the drop has a cover but they don't match
+						makeCardCoverEventListener(coverLinkElement);
+					} else {
+						// The card's cover is this drop's cover
+						coverLinkElement.innerHTML = 'Remove Cover';
+						removeCardCoverEventListener(coverLinkElement);
+					}
+				} else {
+					// Drops that aren't images don't have a cover option
+				}
+
+				copyLinkElement = dropDiv.getElementsByClassName("copy-drop-link")[0];
+				copyLinkElement.setAttribute("value", urls[i]);
+				copyLinkElement.setAttribute("id", "textbox-" + dropCode);
+				copyLinkButtonElement = dropDiv.getElementsByClassName("copy-drop-link-button")[0];
+				copyLinkButtonElement.setAttribute("data-clipboard-target", "#" + "textbox-" + dropCode);
+				allDropsDiv.appendChild(dropDiv);
 				newRow.setAttribute("style", "");
 			}
 		}
