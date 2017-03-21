@@ -340,15 +340,16 @@ var renderUsingTrelloAPI = function(token) {
 			return false;
 		} else {
 			needsMoreAnalysis.push(formatDropUrl(null, url));
+			return true;
 		}
 	});
 	
 	console.log("Here are drops that need to be looked up:\n" + JSON.stringify(dropsThatNeedMoreInfo, null, 4));
 	
 	return Promise.all(
-		Promise.resolve(urls),
-		Promise.resolve(titles),
-		Promise.resolve(dates),
+		Promise.resolve(urls.slice()),
+		Promise.resolve(titles.slice()),
+		Promise.resolve(dates.slice()),
 		Promise.resolve(res[2].id),
 		Promise.resolve(res[2].cover),
 		Promise.resolve(dropsThatNeedMoreInfo),
