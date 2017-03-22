@@ -371,7 +371,7 @@ var renderUsingTrelloAPI = function(token) {
 				titleElement = dropDiv.getElementsByClassName("drop-title")[0];
 				titleElement.innerHTML = titles[i];
 				dateElement = dropDiv.getElementsByClassName("added-date")[0];
-				dateElement.innerHTML = "Added " + formatDate(date);
+				dateElement.innerHTML = "Added " + formatDate(dates[i]);
 				linkElement = dropDiv.getElementsByClassName("drop-link")[0];
 				linkElement.setAttribute("href", urls[0]);
 				coverLinkElement = dropDiv.getElementsByClassName("drop-cover")[0];
