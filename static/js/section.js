@@ -353,16 +353,19 @@ var renderUsingTrelloAPI = function(token) {
 	return Promise.all(needsMoreAnalysis);
   })
   .then(function(results) {
-		for(var index = 0; index < dropsThatNeedMoreInfo.length; index++) {
+		for(var i = 0; i < dropsThatNeedMoreInfo.length; i++) {
 			dropInfoLookup.set(dropsThatNeedMoreInfo[i], results[i]);
 		}
 	
 		dropCount = urls.length;
 		allDropsDiv.innerHTML = '';
+		console.log("The drop count is " + dropCount)
 		for(i = 0; i < dropCount; i++ )
 		{
+			console.log("Iteration " + i);
 			dropInfo = dropInfoLookup.get(urls[i]);
 			if(dropInfo != null) {
+				console.log("Valid drop info found for " + urls[i])
 				dropCode = dropInfo.code
 				dropDiv = detailRowTemplate.cloneNode(true);
 				dropDiv.setAttribute("id", "drop" + dropCode);
