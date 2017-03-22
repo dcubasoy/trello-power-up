@@ -80,7 +80,8 @@ var formatDropUrl = function(t, url){
 
   } else {
 	  return getEmbedInfo(url)
-	  .then(function(embedInfo) {
+	  .then(function(rawEmbedInfo) {
+			var embedInfo = JSON.parse(rawEmbedInfo);
 			console.log("EmbedInfo" + JSON.stringify(embedInfo));
 		  	if(embedInfo.hasOwnProperty("shortLink")) {
 				if(test_drop_regex.test(embedInfo.shortLink)){ 
