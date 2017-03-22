@@ -40,8 +40,6 @@ var couldBeDrop = function(url) {
 }
 
 var formatDropUrl = function(t, url){
-	console.log("formatDropUrl called");
-	console.log(" - URL: " + url);
 	if(test_drop_regex.test(url)){
 		capture_results = capture_drop_regex.exec(url);
 		if(capture_results != null) {
@@ -73,7 +71,6 @@ var formatDropUrl = function(t, url){
 			} else {
 				dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/medium';
 			}
-			console.log("Drop parameters:\n" + JSON.stringify(dropParameters, null, 4));
 			return Promise.resolve(dropParameters);
 		} else {
 			return Promise.resolve(null);
@@ -83,7 +80,6 @@ var formatDropUrl = function(t, url){
 		return getEmbedInfo(url)
 		.then(function(rawEmbedInfo) {
 			embedInfo = JSON.parse(rawEmbedInfo);
-			console.log("EmbedInfo:\n" + JSON.stringify(embedInfo, null, 4));
 			if(embedInfo.hasOwnProperty("shortLink")) {
 				var aliasUrl;
 				if(embedInfo.privacy == "PRIVATE") {

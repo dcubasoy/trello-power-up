@@ -60,16 +60,10 @@ var isDropLink = function(attachment) {
 }
 
 var isDropCoverImage = function(attachment) {
-	console.log("isCoverImage called");
-	console.log(" - Attachment: " + JSON.stringify(attachment, null, 4));
-	console.log(" - Return value: " + (test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name)));
 	return test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
 }
 
 var isDropCandidate = function(attachment) {
-	console.log("isDropCandidate called");
-	console.log(" - Attachment: " + JSON.stringify(attachment, null, 4));
-	console.log(" - Return value: " + couldBeDrop(attachment.url));
 	return couldBeDrop(attachment.url);
 	//return true;
 }
@@ -191,63 +185,6 @@ var formatDate = function(date) {
 	
 }
 
-var newEnhancedRow = function(url, title, date, card, cover) {
-	console.log("newEnhancedRow called");
-	console.log(" - URL: " + url);
-	console.log(" - Title: " + title);
-	console.log(" - Date: " + date);
-	console.log(" - Card: " + card);
-	console.log(" - Cover: " + JSON.stringify(cover, null, 4));
-	var dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
-	var coverLinkElement, copyLinkButtonElement, dropCode, dropInfo;
-	dropInfo = dropInfoLookup.get(url);
-	if(dropInfo != null) {
-		dropCode = dropInfo.code
-		dropDiv = detailRowTemplate.cloneNode(true);
-		dropDiv.setAttribute("id", "drop" + dropCode);
-		imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
-		imageElement.setAttribute("src", dropInfo.thumbnail);
-		titleElement = dropDiv.getElementsByClassName("drop-title")[0];
-		titleElement.innerHTML = title;
-		dateElement = dropDiv.getElementsByClassName("added-date")[0];
-		dateElement.innerHTML = "Added " + formatDate(date);
-		linkElement = dropDiv.getElementsByClassName("drop-link")[0];
-		linkElement.setAttribute("href", url);
-		coverLinkElement = dropDiv.getElementsByClassName("drop-cover")[0];
-		if(dropInfo.type == 'i') {
-			coverLinkElement.setAttribute("data-droplr-card", card);
-			coverLinkElement.setAttribute("data-droplr-drop", url);
-			coverLinkElement.setAttribute("style", "");
-			dropDiv.getElementsByClassName("fa-window-maximize")[0].setAttribute("style", "margin-left: 10px;");
-			if(cover == null) {
-				// The card does not currently have a cover
-				makeCardCoverEventListener(coverLinkElement);
-			} else if(!dropCoverLookup.has(dropCode)) {
-				// There is no cover associated with this drop so it can't be the cover
-				makeCardCoverEventListener(coverLinkElement);
-			} else if(cover.id != dropCoverLookup.get(dropCode).id) {
-				// The card has a cover and the drop has a cover but they don't match
-				makeCardCoverEventListener(coverLinkElement);
-			} else {
-				// The card's cover is this drop's cover
-				coverLinkElement.innerHTML = 'Remove Cover';
-				removeCardCoverEventListener(coverLinkElement);
-			}
-		} else {
-			// Drops that aren't images don't have a cover option
-		}
-
-		copyLinkElement = dropDiv.getElementsByClassName("copy-drop-link")[0];
-		copyLinkElement.setAttribute("value", url);
-		copyLinkElement.setAttribute("id", "textbox-" + dropCode);
-		copyLinkButtonElement = dropDiv.getElementsByClassName("copy-drop-link-button")[0];
-		copyLinkButtonElement.setAttribute("data-clipboard-target", "#" + "textbox-" + dropCode);
-		return dropDiv;
-	} else {
-		return null;
-	}
-}
-
 var newBasicRow = function(url, title) {
 	console.log("newBasicRow called");
 	console.log(" - URL: " + url);
@@ -293,7 +230,6 @@ var newBasicRow = function(url, title) {
 // and cover image caches up to date. It is also responsible for displaying
 // generating HTML to display the appropriate state of all drops.
 var renderUsingTrelloAPI = function(token) {
-	console.log("renderUsingTrelloAPI called");
 	var dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
 	var coverLinkElement, copyLinkButtonElement, dropCode, dropInfo;
 	var urls = [];
@@ -346,7 +282,6 @@ var renderUsingTrelloAPI = function(token) {
 		}
 	});
 	
-	console.log("Here are drops that need to be looked up:\n" + JSON.stringify(dropsThatNeedMoreInfo, null, 4));
 	card = res[2].id;
 	cover = res[2].cover;
 	
@@ -359,13 +294,10 @@ var renderUsingTrelloAPI = function(token) {
 	
 		dropCount = urls.length;
 		allDropsDiv.innerHTML = '';
-		console.log("The drop count is " + dropCount)
 		for(i = 0; i < dropCount; i++ )
 		{
-			console.log("Iteration " + i);
 			dropInfo = dropInfoLookup.get(urls[i]);
 			if(dropInfo != null) {
-				console.log("Valid drop info found for " + urls[i])
 				dropCode = dropInfo.code
 				dropDiv = detailRowTemplate.cloneNode(true);
 				dropDiv.setAttribute("id", "drop" + dropCode);
@@ -417,11 +349,14 @@ var renderUsingTrelloAPI = function(token) {
 };
 
 var renderUsingPowerUpApi = function() {
-	console.log("renderUsingPowerUpAPI called");
+	var dropDiv, imageElement, titleElement, dateElement, linkElement, copyLinkElement;
+	var coverLinkElement, copyLinkButtonElement, dropCode, dropInfo;
 	var urls = [];
 	var titles = [];
 	var i;
 	var dropCount = 0;
+	var needsMoreAnalysis = [];
+	var dropsThatNeedMoreInfo = [];
 	return t.card('attachments')
 	.then(function(card) {
 	  return Promise.all([
@@ -433,34 +368,57 @@ var renderUsingPowerUpApi = function() {
 	.then(function(res){
 		urls = res[0].map(function(a){ return a.url; });
 		titles = res[0].map(function(a){ return a.name; });
-
+		
+		dropsThatNeedMoreInfo = urls.filter(function(url) {
+			if(dropInfoLookup.has(url)) {
+				return false;
+			} else {
+				needsMoreAnalysis.push(formatDropUrl(null, url));
+				return true;
+			}
+		});
+		
+		return Promise.all(needsMoreAnalysis);
+	})
+	.then(function(results) {
+		for(var i = 0; i < dropsThatNeedMoreInfo.length; i++) {
+			dropInfoLookup.set(dropsThatNeedMoreInfo[i], results[i]);
+		}
+		
 		dropCount = urls.length;
 		allDropsDiv.innerHTML = '';
 		for(i = 0; i < dropCount; i++ )
 		{
-			console.log("Value of parameters before basic row calls");
-			console.log(" - URL: " + urls[i]);
-			console.log(" - Title: " + titles[i]);
-			if(!dropInfoLookup.has(urls[i])) {
-				formatDropUrl(null, urls[i])
-				.then(function(result) {
-					dropInfoLookup.set(urls[i], result);
-					if(result != null) {
-						newRow = newBasicRow(urls[i], titles[i]);
-						if(newRow != null) {
-							allDropsDiv.appendChild(newRow);
-							newRow.setAttribute("style", "");
-						}
-					}
-				});
-			} else {
-				if(dropInfoLookup[urls[i]] != null) {
-					newRow = newBasicRow(urls[i], titles[i]);
-					if(newRow != null) {
-						allDropsDiv.appendChild(newRow);
-						newRow.setAttribute("style", "");
-					}
+			dropInfo = dropInfoLookup.get(urls[i]);
+			if(dropInfo != null) {
+				dropCode = dropInfo.code
+				dropDiv = detailRowTemplate.cloneNode(true);
+				dropDiv.setAttribute("id", dropCode);
+				imageElement = dropDiv.getElementsByClassName("drop-thumbnail")[0];
+				imageElement.setAttribute("src", dropInfo.thumbnail);
+				titleElement = dropDiv.getElementsByClassName("drop-title")[0];
+				titleElement.innerHTML = titles[i];
+				dateElement = dropDiv.getElementsByClassName("added-date")[0];
+				dateElement.setAttribute("style", "display: none;");
+				linkElement = dropDiv.getElementsByClassName("drop-link")[0];
+				linkElement.setAttribute("href", urls[i]);
+				coverLinkElement = dropDiv.getElementsByClassName("drop-cover")[0];
+				if(dropInfo.type == 'i') {
+					coverLinkElement.setAttribute("style", "");
+					dropDiv.getElementsByClassName("fa-window-maximize")[0].setAttribute("style", "margin-left: 10px;");
+					authorizeCardCoverEventListener(coverLinkElement);
+				} else {
+					// Drops that aren't images don't have a cover option
 				}
+		
+				copyLinkElement = dropDiv.getElementsByClassName("copy-drop-link")[0];
+				copyLinkElement.setAttribute("value", urls[i]);
+				copyLinkElement.setAttribute("id", "textbox-" + dropCode);
+				copyLinkButtonElement = dropDiv.getElementsByClassName("copy-drop-link-button")[0];
+				copyLinkButtonElement.setAttribute("data-clipboard-target", "#" + "textbox-" + dropCode);
+
+				allDropsDiv.appendChild(dropDiv);
+				dropDiv.setAttribute("style", "");
 			}
 		}
 	})
@@ -472,7 +430,6 @@ var renderUsingPowerUpApi = function() {
 // This method gets called each time a user adds or removes attachments to our
 // attachment section.
 var refreshDroplrSection = function(){
-	console.log("refreshDroplrSection called");
 	return Promise.all([
 			t.get('organization', 'private', 'token'),
 			t.get('board', 'private', 'token')
