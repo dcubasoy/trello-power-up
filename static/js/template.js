@@ -66,10 +66,7 @@ TrelloPowerUp.initialize({
 	})
 	.then(function(results) {
 		for(var i = 0; i < results.length; i++) {
-			console.log("Loop iteration:" + i);
 			embedInfo = JSON.parse(results[i]);
-			console.log("Embed Info:\n" + JSON.stringify(embedInfo, null, 4))
-			
 			if(embedInfo.hasOwnProperty("shortLink")) {
 				claimed.push(unknownAttachments[i]);
 			}
@@ -108,7 +105,7 @@ TrelloPowerUp.initialize({
     }];
   },
   'card-from-url': function(t, options) {
-	formatDropUrl(t, options.url)
+	return formatDropUrl(t, options.url)
 	.then(function(dropInfo) {
 		if(dropInfo){
 			return TrelloPowerUp.Promise.all([
