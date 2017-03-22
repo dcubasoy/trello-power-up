@@ -1,3 +1,4 @@
+var embedInfo;
 var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivf]\/\w{3,8}/
 var test_might_be_drop = /\/\w{3,8}$/
 var test_might_be_drop_with_password = /\/\w{3,8}\/\w*$/
@@ -39,64 +40,97 @@ var couldBeDrop = function(url) {
 }
 
 var formatDropUrl = function(t, url){
-  var embedInfo;
-  console.log("formatDropUrl called");
-  console.log(" - URL: " + url);
-  if(test_drop_regex.test(url)){
-	capture_results = capture_drop_regex.exec(url);
-	  if(capture_results != null) {
-		  var dropParameters = {
-			"url": url,
-			protocol: capture_results[1],
-			type: capture_results[2],
-			code: capture_results[3],
-			accessCode: capture_results[4],
-			thumbnail: '',
-			fullsize: ''
-		};
+	console.log("formatDropUrl called");
+	console.log(" - URL: " + url);
+	if(test_drop_regex.test(url)){
+		capture_results = capture_drop_regex.exec(url);
+		if(capture_results != null) {
+			var dropParameters = {
+				"url": url,
+				protocol: capture_results[1],
+				type: capture_results[2],
+				code: capture_results[3],
+				accessCode: capture_results[4],
+				thumbnail: '',
+				fullsize: ''
+			};
 
-		if(dropParameters.accessCode == 'small' ||
-			dropParameters.accessCode == 'medium' ||
-			dropParameters.accessCode == 'thumbnail')
-		{
-			dropParameters.accessCode = '';
-		}
+			if(dropParameters.accessCode == 'small' ||
+				dropParameters.accessCode == 'medium' ||
+				dropParameters.accessCode == 'thumbnail')
+			{
+				dropParameters.accessCode = '';
+			}
 
-		if(dropParameters.accessCode.length > 0) {
-		  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/thumbnail';
+			if(dropParameters.accessCode.length > 0) {
+				dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/thumbnail';
+			} else {
+				dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/thumbnail';
+			}
+
+			if(dropParameters.accessCode.length > 0) {
+				dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/medium';
+			} else {
+				dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/medium';
+			}
+
+			return Promise.resolve(dropParameters);
 		} else {
-		  dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/thumbnail';
+			return Promise.resolve(null);
 		}
 
-		if(dropParameters.accessCode.length > 0) {
-		  dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/medium';
-		} else {
-		  dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/medium';
-		}
-
-		return Promise.resolve(dropParameters);
-	  } else {
-		  return Promise.resolve(null);
-	  }
-
-  } else {
-	  return getEmbedInfo(url)
-	  .then(function(rawEmbedInfo) {
+	} else {
+		return getEmbedInfo(url)
+		.then(function(rawEmbedInfo) {
 			embedInfo = JSON.parse(rawEmbedInfo);
 			console.log("EmbedInfo:\n" + JSON.stringify(embedInfo, null, 4));
-		  	if(embedInfo.hasOwnProperty("shortLink")) {
+			if(embedInfo.hasOwnProperty("shortLink")) {
 				if(test_drop_regex.test(embedInfo.shortLink)){ 
-					console.log("Short Link value before recursive call to formatDropUrl: " + embedInfo.shortLink);
-					return formatDropUrl(embedInfo.shortLink);
+					//console.log("Short Link value before recursive call to formatDropUrl: " + embedInfo.shortLink);
+					//return formatDropUrl(embedInfo.shortLink);
+					capture_results = capture_drop_regex.exec(embedInfo.shortLink);
+					if(capture_results != null) {
+						var dropParameters = {
+							"url": url,
+							protocol: capture_results[1],
+							type: capture_results[2],
+							code: capture_results[3],
+							accessCode: capture_results[4],
+							thumbnail: '',
+							fullsize: ''
+						};
+
+						if(dropParameters.accessCode == 'small' ||
+							dropParameters.accessCode == 'medium' ||
+							dropParameters.accessCode == 'thumbnail')
+						{
+							dropParameters.accessCode = '';
+						}
+
+						if(dropParameters.accessCode.length > 0) {
+							dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/thumbnail';
+						} else {
+							dropParameters.thumbnail = 'https://d.pr/' + dropParameters.code + '/thumbnail';
+						}
+
+						if(dropParameters.accessCode.length > 0) {
+							dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/' + dropParameters.accessCode + '/medium';
+						} else {
+							dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/medium';
+						}
+
+						return Promise.resolve(dropParameters);
+					} else {
+						return Promise.resolve(null);
+					}
 				} else {
 					return Promise.resolve(null);
 				}
 			} else {
 				return Promise.resolve(null);
 			}
-	  });
-  }
-  
+		});
+	}
 };
 
 var extractDropCodeFromCover = function(t, attachmentName) {
