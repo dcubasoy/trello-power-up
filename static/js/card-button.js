@@ -67,7 +67,7 @@ document.getElementById('make-cover').addEventListener('click', function(){
 				}
 			})
 		} else {
-			Promise.reject("Couldn't retrieve info for drop. Are you sure the link is an active drop?");
+			return Promise.reject("Couldn't retrieve info for drop. Are you sure the link is an active drop?");
 		}
 	})
 	.catch(function(reason) {
