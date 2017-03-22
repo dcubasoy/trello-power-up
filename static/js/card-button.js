@@ -44,7 +44,7 @@ document.getElementById('make-cover').addEventListener('click', function(){
 						Trello.setToken(boardToken);
 					}
 					
-					return t.card('id', 'cover');
+					return t.card('id', 'cover')
 					.then(function(card) {
 						return new Promise.all([
 							Trello.post('/cards/' + card.id + '/attachments', {url: dropInfo.url, name: dropInfo.title}),
