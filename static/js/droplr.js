@@ -73,7 +73,7 @@ var formatDropUrl = function(t, url){
 			} else {
 				dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/medium';
 			}
-
+			console.log("Drop parameters:\n" + JSON.stringify(dropParameters, null, 4));
 			return Promise.resolve(dropParameters);
 		} else {
 			return Promise.resolve(null);
@@ -85,10 +85,16 @@ var formatDropUrl = function(t, url){
 			embedInfo = JSON.parse(rawEmbedInfo);
 			console.log("EmbedInfo:\n" + JSON.stringify(embedInfo, null, 4));
 			if(embedInfo.hasOwnProperty("shortLink")) {
-				if(test_drop_regex.test(embedInfo.shortLink)){ 
+				var aliasUrl;
+				if(embedInfo.privacy == "PRIVATE") {
+					aliasUrl = embedInfo.shortLink + "/" + embedInfo.password;
+				} else {
+					aliasUrl = embedInfo.shortLink;
+				}
+				if(test_drop_regex.test(aliasUrl)){ 
 					//console.log("Short Link value before recursive call to formatDropUrl: " + embedInfo.shortLink);
 					//return formatDropUrl(embedInfo.shortLink);
-					capture_results = capture_drop_regex.exec(embedInfo.shortLink);
+					capture_results = capture_drop_regex.exec(aliasUrl);
 					if(capture_results != null) {
 						var dropParameters = {
 							"url": url,
@@ -119,6 +125,7 @@ var formatDropUrl = function(t, url){
 							dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/medium';
 						}
 
+						console.log("Drop parameters:\n" + JSON.stringify(dropParameters, null, 4));
 						return Promise.resolve(dropParameters);
 					} else {
 						return Promise.resolve(null);
