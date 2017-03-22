@@ -39,6 +39,7 @@ var couldBeDrop = function(url) {
 }
 
 var formatDropUrl = function(t, url){
+  var embedInfo;
   console.log("formatDropUrl called");
   console.log(" - URL: " + url);
   if(test_drop_regex.test(url)){
@@ -81,10 +82,11 @@ var formatDropUrl = function(t, url){
   } else {
 	  return getEmbedInfo(url)
 	  .then(function(rawEmbedInfo) {
-			var embedInfo = JSON.parse(rawEmbedInfo);
-			console.log("EmbedInfo" + JSON.stringify(embedInfo));
+			embedInfo = JSON.parse(rawEmbedInfo);
+			console.log("EmbedInfo:\n" + JSON.stringify(embedInfo, null, 4));
 		  	if(embedInfo.hasOwnProperty("shortLink")) {
 				if(test_drop_regex.test(embedInfo.shortLink)){ 
+					console.log("Short Link value before recursive call to formatDropUrl: " + embedInfo.shortLink);
 					return formatDropUrl(embedInfo.shortLink);
 				} else {
 					return Promise.resolve(null);
