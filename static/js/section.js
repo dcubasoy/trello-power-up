@@ -404,7 +404,7 @@ var renderUsingTrelloAPI = function(token) {
 				copyLinkButtonElement = dropDiv.getElementsByClassName("copy-drop-link-button")[0];
 				copyLinkButtonElement.setAttribute("data-clipboard-target", "#" + "textbox-" + dropCode);
 				allDropsDiv.appendChild(dropDiv);
-				newRow.setAttribute("style", "");
+				dropDiv.setAttribute("style", "");
 			}
 		}
   })
