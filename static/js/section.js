@@ -353,10 +353,6 @@ var renderUsingTrelloAPI = function(token) {
 	return Promise.all(needsMoreAnalysis);
   })
   .then(function(results) {
-	console.log("Here is what was calculated in the last step:\n" + JSON.stringify(results, null, 4));
-	console.log("Can I see urls from here?\n" + JSON.stringify(urls, null, 4));
-	console.log("Can I see titles from here?\n" + JSON.stringify(titles, null, 4));
-	console.log("Can I see dates from here?\n" + JSON.stringify(dates, null, 4));
 		for(var index = 0; index < dropsThatNeedMoreInfo.length; index++) {
 			dropInfoLookup.set(dropsThatNeedMoreInfo[i], results[i]);
 		}
