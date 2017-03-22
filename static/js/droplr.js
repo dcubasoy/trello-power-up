@@ -50,7 +50,8 @@ var formatDropUrl = function(t, url){
 				code: capture_results[3],
 				accessCode: capture_results[4],
 				thumbnail: '',
-				fullsize: ''
+				fullsize: '',
+				title: url
 			};
 
 			if(dropParameters.accessCode == 'small' ||
@@ -99,7 +100,8 @@ var formatDropUrl = function(t, url){
 							code: capture_results[3],
 							accessCode: capture_results[4],
 							thumbnail: '',
-							fullsize: ''
+							fullsize: '',
+							title: embedInfo.title
 						};
 
 						if(dropParameters.accessCode == 'small' ||
@@ -120,8 +122,6 @@ var formatDropUrl = function(t, url){
 						} else {
 							dropParameters.fullsize = 'https://d.pr/' + dropParameters.code + '/medium';
 						}
-
-						console.log("Drop parameters:\n" + JSON.stringify(dropParameters, null, 4));
 						return Promise.resolve(dropParameters);
 					} else {
 						return Promise.resolve(null);
