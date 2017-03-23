@@ -53,7 +53,7 @@ var makeCover = function (dropLink, btn) {
 	return Promise.all([formatDropUrl(null, dropLink)])
 	.then(function(results) {
 		dropInfo = results[0];
-		console.log("dropInfo:\n" + JSON.stringify(dropInfo null, 4));
+		console.log("dropInfo:\n" + JSON.stringify(dropInfo, null, 4));
 		if(dropInfo) {
 			return Promise.all([
 				t.get('organization', 'private', 'token'),
