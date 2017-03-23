@@ -48,14 +48,12 @@ var attachDrop = function (dropLink, btn) {
 	});
 };
 
-document.getElementById('make-cover').addEventListener('click', function(){
-	dropLink = dropLinkSelector.value;
-	btn = $(this);
-	btn.button('loading');
-	console.log("dropLink:\n" + dropLink)
-	formatDropUrl(dropLink)
-	.then(function(dropInfo) {
-		console.log("dropInfo:\n" + JSON.stringify(dropInfo, null, 4));
+var makeCover = function (dropLink, btn) {
+	var dropInfo;
+	return Promise.all([formatDropUrl(null, dropLink)])
+	.then(function(results) {
+		dropInfo = results[0];
+		console.log("dropInfo:\n" + JSON.stringify(dropInfo null, 4));
 		if(dropInfo) {
 			return Promise.all([
 				t.get('organization', 'private', 'token'),
@@ -111,6 +109,14 @@ document.getElementById('make-cover').addEventListener('click', function(){
 			}
 		}
 	});
+}
+
+document.getElementById('make-cover').addEventListener('click', function(){
+	//dropLink = dropLinkSelector.value;
+	btn = $(this);
+	btn.button('loading');
+	return makeCover(dropLinkSelector.value, btn);
+	
 })
 
 document.getElementById('attach').addEventListener('click', function(){
