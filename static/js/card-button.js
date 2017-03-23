@@ -1,6 +1,5 @@
 var Promise = TrelloPowerUp.Promise;
 var t = TrelloPowerUp.iframe();
-var dropLink;
 var btn;
 
 var dropLinkSelector = document.getElementById('drop-link');
@@ -26,6 +25,28 @@ var accessRequired = function() {
 			height: 140,
 	});
 }
+
+var attachDrop = function (dropLink, btn) {
+	console.log("dropLink value before format drop call " + dropLink);
+	formatDropUrl(dropLink)
+	.then(function(dropInfo) {
+		return t.attach({url: dropInfo.url, name: dropInfo.title});
+	})
+	.then(function(){
+		btn.button('reset');
+		t.closePopup();
+	})
+	.catch(function(reason) {
+		btn.button('reset');
+		if(typeof reason === "string") {
+			errorMessageElement.innerHTML = reason;
+		} else {
+			errorMessageElement.innerHTML = "Something went wrong"
+		}
+		errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+		t.sizeTo('#content');
+	});
+};
 
 document.getElementById('make-cover').addEventListener('click', function(){
 	dropLink = dropLinkSelector.value;
@@ -96,25 +117,5 @@ document.getElementById('attach').addEventListener('click', function(){
 	//dropLink = dropLinkSelector.value;
 	btn = $(this);
 	btn.button('loading');
-	(function(dropLink, btn) {
-		console.log("dropLink value before format drop call " + dropLink);
-		formatDropUrl(dropLink)
-		.then(function(dropInfo) {
-			return t.attach({url: dropInfo.url, name: dropInfo.title});
-		})
-		.then(function(){
-			btn.button('reset');
-			t.closePopup();
-		})
-		.catch(function(reason) {
-			btn.button('reset');
-			if(typeof reason === "string") {
-				errorMessageElement.innerHTML = reason;
-			} else {
-				errorMessageElement.innerHTML = "Something went wrong"
-			}
-			errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
-			t.sizeTo('#content');
-		});
-	})(dropLinkSelector.value, btn);
+	return attachDrop(dropLinkSelector.value, btn);
 })
