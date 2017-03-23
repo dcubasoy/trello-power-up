@@ -96,7 +96,7 @@ document.getElementById('attach').addEventListener('click', function(){
 	dropLink = dropLinkSelector.value;
 	btn = $(this);
 	btn.button('loading');
-	(function(dropLink, btn) {
+	(function(dropLinkSelector.value, btn) {
 		formatDropUrl(dropLink)
 		.then(function(dropInfo) {
 			return t.attach({url: dropInfo.url, name: dropInfo.title});
