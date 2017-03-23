@@ -29,8 +29,10 @@ document.getElementById('make-cover').addEventListener('click', function(){
 	var dropLink = dropLinkSelector.value;
 	var btn = $(this);
 	btn.button('loading');
+	console.log("dropLink:\n" + dropLink)
 	formatDropUrl(dropLink)
 	.then(function(dropInfo) {
+		console.log("dropInfo:\n" + JSON.stringify(dropInfo, null, 4));
 		if(dropInfo) {
 			return Promise.all([
 				t.get('organization', 'private', 'token'),

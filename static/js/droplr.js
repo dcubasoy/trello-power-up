@@ -40,6 +40,7 @@ var couldBeDrop = function(url) {
 }
 
 var formatDropUrl = function(t, url){
+	console.log("formatDropUrl called with url " + url);
 	if(test_drop_regex.test(url)){
 		capture_results = capture_drop_regex.exec(url);
 		if(capture_results != null) {
