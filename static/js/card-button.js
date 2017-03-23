@@ -96,22 +96,24 @@ document.getElementById('attach').addEventListener('click', function(){
 	dropLink = dropLinkSelector.value;
 	btn = $(this);
 	btn.button('loading');
-	formatDropUrl(dropLink)
-	.then(function(dropInfo) {
-		return t.attach({url: dropInfo.url, name: dropInfo.title});
-	})
-	.then(function(){
-		btn.button('reset');
-		t.closePopup();
-	})
-	.catch(function(reason) {
-		btn.button('reset');
-		if(typeof reason === "string") {
-			errorMessageElement.innerHTML = reason;
-		} else {
-			errorMessageElement.innerHTML = "Something went wrong"
-		}
-		errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
-		t.sizeTo('#content');
-	});
+	(function(dropLink, btn) {
+		formatDropUrl(dropLink)
+		.then(function(dropInfo) {
+			return t.attach({url: dropInfo.url, name: dropInfo.title});
+		})
+		.then(function(){
+			btn.button('reset');
+			t.closePopup();
+		})
+		.catch(function(reason) {
+			btn.button('reset');
+			if(typeof reason === "string") {
+				errorMessageElement.innerHTML = reason;
+			} else {
+				errorMessageElement.innerHTML = "Something went wrong"
+			}
+			errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+			t.sizeTo('#content');
+		});
+	})(dropLink, btn);
 })
