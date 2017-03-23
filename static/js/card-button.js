@@ -1,5 +1,7 @@
 var Promise = TrelloPowerUp.Promise;
 var t = TrelloPowerUp.iframe();
+var dropLink;
+var btn;
 
 var dropLinkSelector = document.getElementById('drop-link');
 
@@ -26,8 +28,8 @@ var accessRequired = function() {
 }
 
 document.getElementById('make-cover').addEventListener('click', function(){
-	var dropLink = dropLinkSelector.value;
-	var btn = $(this);
+	dropLink = dropLinkSelector.value;
+	btn = $(this);
 	btn.button('loading');
 	console.log("dropLink:\n" + dropLink)
 	formatDropUrl(dropLink)
@@ -91,8 +93,8 @@ document.getElementById('make-cover').addEventListener('click', function(){
 })
 
 document.getElementById('attach').addEventListener('click', function(){
-	var dropLink = dropLinkSelector.value;
-	var btn = $(this);
+	dropLink = dropLinkSelector.value;
+	btn = $(this);
 	btn.button('loading');
 	formatDropUrl(dropLink)
 	.then(function(dropInfo) {
