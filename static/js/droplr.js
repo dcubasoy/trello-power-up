@@ -2,6 +2,7 @@ var embedInfo;
 var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivf]\/\w{3,8}/
 var test_might_be_drop = /\/\w{3,8}$/
 var test_might_be_drop_with_password = /\/\w{3,8}\/\w*$/
+var trello_attachment = /https://trello-attachments\.s3\.amazonaws\.com/
 var test_drop_cover_image_regex = /^Cover image for drop /
 var test_drop_cover_image_regex2 = /^\w{3,8}\.png$/
 // [1] = Protocol
@@ -36,7 +37,7 @@ var getAllClaims = function() {
 }*/
 
 var couldBeDrop = function(url) {
-	return test_might_be_drop.test(url) || test_might_be_drop_with_password.test(url);
+	return (test_might_be_drop.test(url) || test_might_be_drop_with_password.test(url)) && !trello_attachment.test(url);
 }
 
 var formatDropUrl = function(t, url){
