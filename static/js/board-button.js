@@ -139,72 +139,93 @@ document.getElementById('create-card').addEventListener('click', function(){
 	var embedPreview = embedPreviewSelector.checked;
 	var list = listsSelector.value;
 	var description = "";
-	if(validDropLink) {
-		var btn = $(this);
-		btn.button('loading');
-		var dropInfo = formatDropUrl(null, dropLink);
+	var dropInfo;
+	return Promise.all([formatDropUrl(null, dropLink)])
+	.then(function(results) {
+		dropInfo = results[0];
+		if(dropInfo) {
+			var btn = $(this);
+			btn.button('loading');
 
-		if(embedPreview) {
-			description = '![' + dropLink + '](' + dropInfo.fullsize + ')'
-		} else {
-			description = dropLink.url;
-		}
-
-		return Promise.all([
-				t.get('organization', 'private', 'token'),
-				t.get('board', 'private', 'token')
-		])
-		.spread(function(orgToken, boardToken){
-			//return accessRequired();
-			if(orgToken) {
-				if(createCover) {
-					return createCardWithCover(list, description, dropInfo, orgToken)
-					.then(function(){
-						btn.button('reset');
-						t.closePopup();
-					});
-				} else {
-					return createCard(list, description, dropInfo, orgToken)
-					.then(function(){
-						btn.button('reset');
-						t.closePopup();
-					});
-				}
-			} else if(boardToken) {
-				if(createCover) {
-					return createCardWithCover(list, description, dropInfo, boardToken)
-					.then(function(){
-						btn.button('reset');
-						t.closePopup();
-					});
-				} else {
-					return createCard(list, description, dropInfo, boardToken)
-					.then(function(){
-						btn.button('reset');
-						t.closePopup();
-					});
-				}
+			if(embedPreview) {
+				description = '![' + dropLink + '](' + dropInfo.fullsize + ')'
 			} else {
-				btn.button('reset');
-				return accessRequired();
+				description = dropLink.url;
 			}
-		})
-		.catch(function(reason) {
-			btn.button('reset');
-			if(typeof reason === "string") {
-				errorMessageElement.innerHTML = reason;
-				errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
-				t.sizeTo('#content');
-			} else {
-				if(reason.hasOwnProperty("responseText") && reason.responseText == "invalid token") {
-					accessRequired();
+
+			return Promise.all([
+					t.get('organization', 'private', 'token'),
+					t.get('board', 'private', 'token')
+			])
+			.spread(function(orgToken, boardToken){
+				//return accessRequired();
+				if(orgToken) {
+					if(createCover) {
+						return createCardWithCover(list, description, dropInfo, orgToken)
+						.then(function(){
+							btn.button('reset');
+							t.closePopup();
+						});
+					} else {
+						return createCard(list, description, dropInfo, orgToken)
+						.then(function(){
+							btn.button('reset');
+							t.closePopup();
+						});
+					}
+				} else if(boardToken) {
+					if(createCover) {
+						return createCardWithCover(list, description, dropInfo, boardToken)
+						.then(function(){
+							btn.button('reset');
+							t.closePopup();
+						});
+					} else {
+						return createCard(list, description, dropInfo, boardToken)
+						.then(function(){
+							btn.button('reset');
+							t.closePopup();
+						});
+					}
 				} else {
-					errorMessageElement.innerHTML = "Something went wrong";
+					btn.button('reset');
+					return accessRequired();
+				}
+			})
+			.catch(function(reason) {
+				btn.button('reset');
+				if(typeof reason === "string") {
+					errorMessageElement.innerHTML = reason;
 					errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
 					t.sizeTo('#content');
+				} else {
+					if(reason.hasOwnProperty("responseText") && reason.responseText == "invalid token") {
+						accessRequired();
+					} else {
+						errorMessageElement.innerHTML = "Something went wrong";
+						errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+						t.sizeTo('#content');
+					}
 				}
+			});
+		} else {
+			return Promise.reject("Couldn't retrieve info for drop. Are you sure the link is an active drop?");
+		}
+	})
+	.catch(function(reason) {
+		btn.button('reset');
+		if(typeof reason === "string") {
+			errorMessageElement.innerHTML = reason;
+			errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+			t.sizeTo('#content');
+		} else {
+			if(reason.hasOwnProperty("responseText") && reason.responseText == "invalid token") {
+				accessRequired();
+			} else {
+				errorMessageElement.innerHTML = "Something went wrong";
+				errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
+				t.sizeTo('#content');
 			}
-
-		});
-	}
+		}
+	});
 })
