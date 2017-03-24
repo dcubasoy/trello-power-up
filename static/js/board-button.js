@@ -134,17 +134,17 @@ var notImplemented = function() {
 
 document.getElementById('create-card').addEventListener('click', function(){
 	var dropLink = dropLinkSelector.value;
-	var validDropLink = test_drop_regex.test(dropLink);
 	var createCover = createCoverSelector.checked;
 	var embedPreview = embedPreviewSelector.checked;
 	var list = listsSelector.value;
 	var description = "";
 	var dropInfo;
+	var btn;
 	return Promise.all([formatDropUrl(null, dropLink)])
 	.then(function(results) {
 		dropInfo = results[0];
 		if(dropInfo) {
-			var btn = $(this);
+			btn = $(this);
 			btn.button('loading');
 
 			if(embedPreview) {
