@@ -71,7 +71,7 @@ TrelloPowerUp.initialize({
 		if(hideCoverImages) {
 			covers = options.entries.filter(function(attachment){
 				capture_results = extractDropCodeFromCover(attachment.name);
-				if(capture_results)) {
+				if(capture_results) {
 					return dropMap.has(capture_results);
 				} else {
 					return false;
