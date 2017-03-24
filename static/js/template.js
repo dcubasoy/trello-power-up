@@ -38,7 +38,7 @@ TrelloPowerUp.initialize({
 		t.get('board', 'private', 'hideCoverAttachments', "hide")
 	])
 	.then(function(settings){
-		hideCoverImages = setting[0];
+		hideCoverImages = settings[0];
 		claimed = options.entries.filter(function(attachment){
 			isBasicDrop = test_drop_regex.test(attachment.url);
 			if(isBasicDrop) {
