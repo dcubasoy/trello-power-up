@@ -91,7 +91,7 @@ document.getElementById('create-card').addEventListener('click', function(){
 	var list = listsSelector.value;
 	var description = "";
 	var dropInfo;
-	var btn $(this);
+	var btn = $(this);
 	return Promise.all([formatDropUrl(null, dropLink)])
 	.then(function(results) {
 		dropInfo = results[0];
