@@ -114,12 +114,12 @@ TrelloPowerUp.initialize({
 			.spread(function(savedLinkBehavior){
 				if(savedLinkBehavior === "embed") {
 					return {
-						name: options.url,
+						name: options.title,
 						desc: '![' + options.url + '](' + dropInfo.fullsize + ')'
 					};
 				} else {
 					return {
-						name: options.url,
+						name: options.title,
 						desc: options.url
 					};
 				}
