@@ -38,7 +38,7 @@ authBtn.addEventListener('click', function() {
     t.render(refreshDroplrSection);
   })
   .catch(function(reason) {
-	  console.log("Failed to authorize. Reason:\n" + JSON.stringify(reason));
+	  //console.log("Failed to authorize. Reason:\n" + JSON.stringify(reason));
   });
 });
 
@@ -91,8 +91,8 @@ var setCardCover = function (card, drop) {
 			Trello.put('/cards/' + card + '/idAttachmentCover', {value: attachment})
 		])
 		.catch(function(reason) {
-			console.log("The set cover operation failed");
-			console.log("Details: \n" + JSON.stringify(reason, null, 4));
+			//console.log("The set cover operation failed");
+			//console.log("Details: \n" + JSON.stringify(reason, null, 4));
 		});
 	} else {
 		return new Promise.all([
@@ -105,8 +105,8 @@ var setCardCover = function (card, drop) {
 			])
 		})
 		.catch(function(reason) {
-			console.log("The set cover operation failed");
-			console.log("Details: \n" + JSON.stringify(reason, null, 4));
+			//console.log("The set cover operation failed");
+			//console.log("Details: \n" + JSON.stringify(reason, null, 4));
 		});
 	}
 }
@@ -120,8 +120,8 @@ var clearCardCover = function (card) {
 		Trello.put('/cards/' + card + '/idAttachmentCover', {value: ""} )
 	])
 	.catch(function(reason) {
-		console.log("The clear cover operation failed");
-		console.log("Details: \n" + JSON.stringify(reason, null, 4));
+		//console.log("The clear cover operation failed");
+		//console.log("Details: \n" + JSON.stringify(reason, null, 4));
 	});
 }
 
@@ -447,7 +447,7 @@ var refreshDroplrSection = function(){
 		return t.sizeTo('#content');
 	})
 	.catch(function(reason) {
-		console.log(reason);
+		//console.log(reason);
 		return renderUsingPowerUpApi()
 		.then(function() {
 			return t.sizeTo('#content');

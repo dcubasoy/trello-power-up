@@ -27,7 +27,6 @@ var accessRequired = function() {
 }
 
 var attachDrop = function (dropLink, btn) {
-	console.log("dropLink value before format drop call " + dropLink);
 	return Promise.all([formatDropUrl(null, dropLink)])
 	.then(function(results) {
 		return t.attach({url: results[0].url, name: results[0].title});

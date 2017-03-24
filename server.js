@@ -29,9 +29,9 @@ var getDropInfo = function(url) {
 				}
 				resolve(minDropInfo);
 			} else {
-				reject(
+				resolve (
 				{
-					"message": error,
+					"error": error,
 					"statusCode": response.statusCode
 				}); 
 			}
@@ -49,9 +49,6 @@ app.get("/lookup", function(req, res) {
 		getDropInfo("https://d.pr/oembed?url=" + encodeURIComponent(req.query.url) + "&format=json")
 		.then(result => {
 			res.status(200).json(result);
-		})
-		.catch(error => {
-			handleError(res, null, error.message, error.statusCode);
 		})
 	} else {
 		handleError(res, null, "Missing url parameter");
