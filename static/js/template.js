@@ -44,7 +44,7 @@ TrelloPowerUp.initialize({
 			if(isBasicDrop) {
 				capture_results = capture_drop_regex.exec(attachment.url);
 				if(capture_results != null) {
-					dropMap.set(captureResults[3], true);
+					dropMap.set(capture_results[3], true);
 				}
 				return true;
 			} else if(couldBeDrop(attachment.url)) {
