@@ -35,16 +35,18 @@ TrelloPowerUp.initialize({
 	var capture_results;
 	var hideCoverImages = true;
 	return TrelloPowerUp.Promise.all([
-		t.get('board', 'private', 'hideCoverAttachments', "hide")
+		t.get('board', 'private', 'hideCoverAttachments', "hide", true);
 	])
 	.then(function(settings){
 		hideCoverImages = settings[0];
+		console.log("hideCoverImages: " + hideCoverImages);
 		claimed = options.entries.filter(function(attachment){
 			isBasicDrop = test_drop_regex.test(attachment.url);
 			if(isBasicDrop) {
 				capture_results = capture_drop_regex.exec(attachment.url);
 				if(capture_results != null) {
 					dropMap.set(captureResults[3], attachment.url);
+					console.log("Drop map updated " + captureResults[3] + " ==> " + attachment.url);
 				}
 				return true;
 			} else if(couldBeDrop(attachment.url)) {
@@ -63,12 +65,14 @@ TrelloPowerUp.initialize({
 			embedInfo = JSON.parse(results[i]);
 			if(embedInfo.hasOwnProperty("shortLink")) {
 				dropMap.set(embedInfo.code, embedInfo.url);
+				console.log("Drop map updated " + embedInfo.code + " ==> " + embedInfo.url);
 				claimed.push(unknownAttachments[i]);
 			}
 		}
 	})
 	.then(function() {
 		if(hideCoverImages) {
+			console.log("The user has hidden cover images, time to evaluate all of the covers found");
 			covers = options.entries.filter(function(attachment){
 				capture_results = extractDropCodeFromCover(attachment.name);
 				if(capture_results) {
