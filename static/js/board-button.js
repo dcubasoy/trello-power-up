@@ -41,9 +41,6 @@ var renderBoardButtonUsingTrelloAPI = function(token) {
 
 var renderBoardButtonUsingPowerUpApi = function() {
 	accessRequired();
-	//errorMessageElement.innerHTML = "Link your Trello account to Droplr to create cards from here";
-	//errorAlertElement.setAttribute("class", "alert alert-danger alert-dismissable");
-	//return t.sizeTo('#content');
 }
 
 t.render(function(){
@@ -74,51 +71,6 @@ t.render(function(){
 	});
 });
 
-var createCardWithCover = function(list, description, dropInfo, token) {
-	var embedInfo = {};
-	var dropTitle = dropInfo.url;
-	Trello.setToken(token);
-	return new Promise.all([
-		Trello.post('/lists/' + list + '/cards', {name: dropInfo.url, desc: description}),
-		getEmbedInfo(dropInfo.url)
-	])
-	.then(function(res) {
-		embedInfo = JSON.parse(res[1]);
-		if(embedInfo.hasOwnProperty("title")) {
-			dropTitle = embedInfo.title;
-		}
-		return new Promise.all([
-			Trello.post('/cards/' + res[0].id + '/attachments', {url: dropInfo.url, name: dropTitle}),
-			Trello.post('/cards/' + res[0].id + '/attachments', {url: dropInfo.fullsize, name: 'Cover image for drop ' + dropInfo.code}),
-			res[0].id
-		])
-	})
-	.then(function(results) {
-		return new Promise.all([
-			Trello.put('/cards/' + results[2] + '/idAttachmentCover', {value: results[1].id})
-		])
-	})
-};
-
-var createCard = function(list, description, dropInfo, token) {
-	var embedInfo = {};
-	var dropTitle = dropInfo.url;
-	Trello.setToken(token);
-	return new Promise.all([
-		Trello.post('/lists/' + list + '/cards', {name: dropInfo.url, desc: description}),
-		getEmbedInfo(dropInfo.url)
-	])
-	.then(function(res) {
-		embedInfo = JSON.parse(res[1]);
-		if(embedInfo.hasOwnProperty("title")) {
-			dropTitle = embedInfo.title;
-		}
-		return new Promise.all([
-			Trello.post('/cards/' + res[0].id + '/attachments', {url: dropInfo.url, name: dropTitle})
-		])
-	})
-};
-
 var accessRequired = function() {
 	return t.popup({
 			title: 'Get More Droplr Features',
@@ -139,16 +91,15 @@ document.getElementById('create-card').addEventListener('click', function(){
 	var list = listsSelector.value;
 	var description = "";
 	var dropInfo;
-	var btn;
+	var btn $(this);
 	return Promise.all([formatDropUrl(null, dropLink)])
 	.then(function(results) {
 		dropInfo = results[0];
 		if(dropInfo) {
-			btn = $(this);
 			btn.button('loading');
 
 			if(embedPreview) {
-				description = '![' + dropLink + '](' + dropInfo.fullsize + ')'
+				description = '![' + dropLink.url + '](' + dropInfo.fullsize + ')'
 			} else {
 				description = dropLink.url;
 			}
@@ -159,30 +110,43 @@ document.getElementById('create-card').addEventListener('click', function(){
 			])
 			.spread(function(orgToken, boardToken){
 				//return accessRequired();
-				if(orgToken) {
-					if(createCover) {
-						return createCardWithCover(list, description, dropInfo, orgToken)
-						.then(function(){
-							btn.button('reset');
-							t.closePopup();
-						});
+				if(orgToken || boardToken) {
+					if(orgToken) {
+						Trello.setToken(orgToken);
 					} else {
-						return createCard(list, description, dropInfo, orgToken)
-						.then(function(){
-							btn.button('reset');
-							t.closePopup();
-						});
+						Trello.setToken(boardToken);
 					}
-				} else if(boardToken) {
+					
 					if(createCover) {
-						return createCardWithCover(list, description, dropInfo, boardToken)
-						.then(function(){
+						return new Promise.all([
+							Trello.post('/lists/' + list + '/cards', {name: dropInfo.url, desc: description})
+						])
+						.then(function(res) {
+							return new Promise.all([
+								Trello.post('/cards/' + res[0].id + '/attachments', {url: dropInfo.url, name: dropInfo.title}),
+								Trello.post('/cards/' + res[0].id + '/attachments', {url: dropInfo.fullsize, name: 'Cover image for drop ' + dropInfo.code}),
+								res[0].id
+							])
+						})
+						.then(function(results) {
+							return new Promise.all([
+								Trello.put('/cards/' + results[2] + '/idAttachmentCover', {value: results[1].id})
+							])
+						})
+						.then(function() {
 							btn.button('reset');
 							t.closePopup();
 						});
 					} else {
-						return createCard(list, description, dropInfo, boardToken)
-						.then(function(){
+						return new Promise.all([
+							Trello.post('/lists/' + list + '/cards', {name: dropInfo.url, desc: description})
+						])
+						.then(function(res) {
+							return new Promise.all([
+								Trello.post('/cards/' + res[0].id + '/attachments', {url: dropInfo.url, name: dropInfo.title})
+							])
+						})
+						.then(function() {
 							btn.button('reset');
 							t.closePopup();
 						});
