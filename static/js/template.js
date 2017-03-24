@@ -27,40 +27,34 @@ var boardButtonCallback = function(t){
 TrelloPowerUp.initialize({
   'attachment-sections': function(t, options){
     var isBasicDrop;
-	var needsMoreAnalysis = []
-	var unknownAttachments = []
+	var needsMoreAnalysis = [];
+	var unknownAttachments = [];
 	var claimed = [];
+	var covers = [];
+	var dropMap = new Map();
+	var capture_results;
+	var hideCoverImages = true;
 	return TrelloPowerUp.Promise.all([
 		t.get('board', 'private', 'hideCoverAttachments', "hide")
 	])
 	.then(function(settings){
-		if(settings[0] == "hide") {
-			claimed = options.entries.filter(function(attachment){
-				isBasicDrop = test_drop_regex.test(attachment.url) || test_drop_cover_image_regex.test(attachment.name) || test_drop_cover_image_regex2.test(attachment.name);
-				if(isBasicDrop) {
-					return true;
-				} else if(couldBeDrop(attachment.url)) {
-					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
-					unknownAttachments.push(attachment);
-					return false;
-				} else {
-					return false;
+		hideCoverImages = setting[0];
+		claimed = options.entries.filter(function(attachment){
+			isBasicDrop = test_drop_regex.test(attachment.url);
+			if(isBasicDrop) {
+				capture_results = capture_drop_regex.exec(attachment.url);
+				if(capture_results != null) {
+					dropMap.set(captureResults[3], attachment.url);
 				}
-			});
-		} else {
-			claimed = options.entries.filter(function(attachment){
-				isBasicDrop = test_drop_regex.test(attachment.url);
-				if(isBasicDrop) {
-					return true;
-				} else if(couldBeDrop(attachment.url)) {
-					needsMoreAnalysis.push(getEmbedInfo(attachment.url));
-					unknownAttachments.push(attachment);
-					return false;
-				} else {
-					return false;
-				}
-			});
-		}
+				return true;
+			} else if(couldBeDrop(attachment.url)) {
+				needsMoreAnalysis.push(getEmbedInfo(attachment.url));
+				unknownAttachments.push(attachment);
+				return false;
+			} else {
+				return false;
+			}
+		});
 		
 		return TrelloPowerUp.Promise.all(needsMoreAnalysis);
 	})
@@ -68,7 +62,24 @@ TrelloPowerUp.initialize({
 		for(var i = 0; i < results.length; i++) {
 			embedInfo = JSON.parse(results[i]);
 			if(embedInfo.hasOwnProperty("shortLink")) {
+				dropMap.set(embedInfo.code, embedInfo.url);
 				claimed.push(unknownAttachments[i]);
+			}
+		}
+	})
+	.then(function() {
+		if(hideCoverImages) {
+			covers = options.entries.filter(function(attachment){
+				capture_results = extractDropCodeFromCover(attachment.name);
+				if(capture_results)) {
+					return dropMap.has(capture_results);
+				} else {
+					return false;
+				}
+			});
+			
+			for(i = 0; i < covers.length; i++) {
+				claimed.push(covers[i]);
 			}
 		}
 	})
