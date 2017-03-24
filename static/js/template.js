@@ -45,8 +45,8 @@ TrelloPowerUp.initialize({
 			if(isBasicDrop) {
 				capture_results = capture_drop_regex.exec(attachment.url);
 				if(capture_results != null) {
-					dropMap.set(captureResults[3], attachment.url);
-					console.log("Drop map updated " + captureResults[3] + " ==> " + attachment.url);
+					dropMap.set(captureResults[3], true);
+					console.log("Drop map updated for code" + captureResults[3]);
 				}
 				return true;
 			} else if(couldBeDrop(attachment.url)) {
@@ -64,8 +64,8 @@ TrelloPowerUp.initialize({
 		for(var i = 0; i < results.length; i++) {
 			embedInfo = JSON.parse(results[i]);
 			if(embedInfo.hasOwnProperty("shortLink")) {
-				dropMap.set(embedInfo.code, embedInfo.url);
-				console.log("Drop map updated " + embedInfo.code + " ==> " + embedInfo.url);
+				dropMap.set(embedInfo.code, true);
+				console.log("Drop map updated for code" + embedInfo.code);
 				claimed.push(unknownAttachments[i]);
 			}
 		}
@@ -74,8 +74,11 @@ TrelloPowerUp.initialize({
 		if(hideCoverImages) {
 			console.log("The user has hidden cover images, time to evaluate all of the covers found");
 			covers = options.entries.filter(function(attachment){
+				console.log("Testing attachment " + attachment.name);
 				capture_results = extractDropCodeFromCover(attachment.name);
 				if(capture_results) {
+					console.log("The cover image looks like it is for a drop");
+					console.log("Do we have a drop with the same code? " + dropMap.has(capture_results));
 					return dropMap.has(capture_results);
 				} else {
 					return false;
