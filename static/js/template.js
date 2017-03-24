@@ -34,6 +34,7 @@ TrelloPowerUp.initialize({
 	var dropMap = new Map();
 	var capture_results;
 	var hideCoverImages = true;
+	var extractedCode = "";
 	return TrelloPowerUp.Promise.all([
 		t.get('board', 'private', 'hideCoverAttachments', "hide", true)
 	])
@@ -75,11 +76,12 @@ TrelloPowerUp.initialize({
 			console.log("The user has hidden cover images, time to evaluate all of the covers found");
 			covers = options.entries.filter(function(attachment){
 				console.log("Testing attachment " + attachment.name);
-				capture_results = extractDropCodeFromCover(attachment.name);
-				if(capture_results) {
+				extractedCode = extractDropCodeFromCover(attachment.name);
+				console.log("Extracted code: " + extractedCode);
+				if(extractedCode) {
 					console.log("The cover image looks like it is for a drop");
-					console.log("Do we have a drop with the same code? " + dropMap.has(capture_results));
-					return dropMap.has(capture_results);
+					console.log("Do we have a drop with the same code? " + dropMap.has(extractedCode));
+					return dropMap.has(extractedCode);
 				} else {
 					return false;
 				}
