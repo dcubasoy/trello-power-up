@@ -19,7 +19,6 @@ var boardButtonCallback = function(t){
   return t.popup({
     title: 'Droplr',
 	url: './board-button.html',
-	
     height: 250
   });
 };
@@ -40,14 +39,12 @@ TrelloPowerUp.initialize({
 	])
 	.then(function(settings){
 		hideCoverImages = settings[0];
-		console.log("hideCoverImages: " + hideCoverImages);
 		claimed = options.entries.filter(function(attachment){
 			isBasicDrop = test_drop_regex.test(attachment.url);
 			if(isBasicDrop) {
 				capture_results = capture_drop_regex.exec(attachment.url);
 				if(capture_results != null) {
 					dropMap.set(captureResults[3], true);
-					console.log("Drop map updated for code " + captureResults[3]);
 				}
 				return true;
 			} else if(couldBeDrop(attachment.url)) {
@@ -66,21 +63,15 @@ TrelloPowerUp.initialize({
 			embedInfo = JSON.parse(results[i]);
 			if(embedInfo.hasOwnProperty("shortLink")) {
 				dropMap.set(embedInfo.code, true);
-				console.log("Drop map updated for code" + embedInfo.code);
 				claimed.push(unknownAttachments[i]);
 			}
 		}
 	})
 	.then(function() {
 		if(hideCoverImages) {
-			console.log("The user has hidden cover images, time to evaluate all of the covers found");
 			covers = options.entries.filter(function(attachment){
-				console.log("Testing attachment " + attachment.name);
 				extractedCode = extractDropCodeFromCover(null, attachment.name);
-				console.log("Extracted code: " + extractedCode);
 				if(extractedCode) {
-					console.log("The cover image looks like it is for a drop");
-					console.log("Do we have a drop with the same code? " + dropMap.has(extractedCode));
 					return dropMap.has(extractedCode);
 				} else {
 					return false;
