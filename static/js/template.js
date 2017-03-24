@@ -35,7 +35,7 @@ TrelloPowerUp.initialize({
 	var capture_results;
 	var hideCoverImages = true;
 	return TrelloPowerUp.Promise.all([
-		t.get('board', 'private', 'hideCoverAttachments', "hide", true);
+		t.get('board', 'private', 'hideCoverAttachments', "hide", true)
 	])
 	.then(function(settings){
 		hideCoverImages = settings[0];
