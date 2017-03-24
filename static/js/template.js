@@ -47,7 +47,7 @@ TrelloPowerUp.initialize({
 				capture_results = capture_drop_regex.exec(attachment.url);
 				if(capture_results != null) {
 					dropMap.set(captureResults[3], true);
-					console.log("Drop map updated for code" + captureResults[3]);
+					console.log("Drop map updated for code " + captureResults[3]);
 				}
 				return true;
 			} else if(couldBeDrop(attachment.url)) {
@@ -76,7 +76,7 @@ TrelloPowerUp.initialize({
 			console.log("The user has hidden cover images, time to evaluate all of the covers found");
 			covers = options.entries.filter(function(attachment){
 				console.log("Testing attachment " + attachment.name);
-				extractedCode = extractDropCodeFromCover(attachment.name);
+				extractedCode = extractDropCodeFromCover(null, attachment.name);
 				console.log("Extracted code: " + extractedCode);
 				if(extractedCode) {
 					console.log("The cover image looks like it is for a drop");
