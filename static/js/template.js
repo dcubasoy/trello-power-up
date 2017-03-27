@@ -88,7 +88,7 @@ TrelloPowerUp.initialize({
 			return [{
 				id: 'droplr', // optional if you aren't using a function for the title
 				claimed: claimed,
-				icon: DROPLR_ICON,
+				icon: DROPLR_GRAY_ICON,
 				title: 'Drops',
 				content: {
 					type: 'iframe',
