@@ -1,5 +1,5 @@
 var embedInfo;
-var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivf]\/\w{3,8}/
+var test_drop_regex = /^(http|https):\/\/d\.pr\/[ivfn]\/\w{3,8}/
 var test_might_be_drop = /\/\w{3,8}$/
 var test_might_be_drop_with_password = /\/\w{3,8}\/\w*$/
 var trello_attachment = /https:\/\/trello-attachments\.s3\.amazonaws\.com/
@@ -9,7 +9,7 @@ var test_drop_cover_image_regex2 = /^\w{3,8}\.png$/
 // [2] = Drop Type
 // [3] = Drop Code
 // [4] = Drop Access Code
-var capture_drop_regex = /^(http|https):\/\/d\.pr\/([ivf])\/(\w{3,8})\/?(\w*)\/?/
+var capture_drop_regex = /^(http|https):\/\/d\.pr\/([ivfn])\/(\w{3,8})\/?(\w*)\/?/
 var capture_drop_cover_image_regex = /^Cover image for drop (\w*)/
 var capture_drop_cover_image_regex2 = /^(\w{3,8})\.png$/
 /*var uniqueClaims = {};
