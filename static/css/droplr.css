@@ -1,7 +1,8 @@
 .drop-thumbnail {
-  margin: 7px;
+  margin: auto;
   border: 1px solid #D6DADC;
   border-radius: 3px;
+  display: auto;
 }
 
 a {
