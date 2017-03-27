@@ -5,6 +5,13 @@
   display: auto;
 }
 
+.drop-thumbnail-no-border {
+  margin: auto;
+  border: 0px solid #D6DADC;
+  border-radius: 3px;
+  display: auto;
+}
+
 a {
   text-decoration: underline;
 }

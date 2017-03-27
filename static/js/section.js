@@ -331,6 +331,7 @@ var renderUsingTrelloAPI = function(token) {
 					}
 				} else {
 					imageElement.setAttribute("width", "74");
+					imageElement.setAttribute("class", "drop-thumbnail-no-border");
 					// Drops that aren't images don't have a cover option
 				}
 
@@ -410,6 +411,7 @@ var renderUsingPowerUpApi = function() {
 					authorizeCardCoverEventListener(coverLinkElement);
 				} else {
 					imageElement.setAttribute("width", "74");
+					imageElement.setAttribute("class", "drop-thumbnail-no-border");
 					// Drops that aren't images don't have a cover option
 				}
 		
